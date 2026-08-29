@@ -35,6 +35,7 @@ jobs:
         run: mvn -B clean verify
 
       - name: SonarCloud scan
+        if: ${{ github.actor != 'dependabot[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
