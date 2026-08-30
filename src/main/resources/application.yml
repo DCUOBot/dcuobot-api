@@ -11,3 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+
+census:
+  base-url: https://census-proxy.dcuo.bot/s:dcuobot
