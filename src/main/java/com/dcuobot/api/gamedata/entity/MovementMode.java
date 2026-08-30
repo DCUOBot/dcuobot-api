@@ -1,5 +1,6 @@
 package com.dcuobot.api.gamedata.entity;
 
+import com.dcuobot.api.gamedata.resource.MovementModeResource;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,4 +17,11 @@ public class MovementMode {
     private String censusId;
 
     private String name;
+
+    public static MovementMode fromResource(MovementModeResource resource) {
+        MovementMode movementMode = new MovementMode();
+        movementMode.setCensusId(resource.getId());
+        movementMode.setName(resource.getName());
+        return movementMode;
+    }
 }

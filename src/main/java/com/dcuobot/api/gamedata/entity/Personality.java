@@ -1,5 +1,6 @@
 package com.dcuobot.api.gamedata.entity;
 
+import com.dcuobot.api.gamedata.resource.PersonalityResource;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,4 +17,11 @@ public class Personality {
     private String censusId;
 
     private String name;
+
+    public static Personality fromResource(PersonalityResource resource) {
+        Personality personality = new Personality();
+        personality.setCensusId(resource.getId());
+        personality.setName(resource.getName());
+        return personality;
+    }
 }
