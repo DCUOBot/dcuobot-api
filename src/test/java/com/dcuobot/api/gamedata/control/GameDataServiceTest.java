@@ -1,5 +1,6 @@
 package com.dcuobot.api.gamedata.control;
 
+import com.dcuobot.api.gamedata.dto.*;
 import com.dcuobot.api.gamedata.entity.*;
 import com.dcuobot.api.gamedata.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -56,6 +58,133 @@ class GameDataServiceTest {
                 alignmentRepository, allyRepository, artifactRepository, genderRepository,
                 guildAlignmentRepository, movementModeRepository, personalityRepository, powerTypeRepository,
                 new ObjectMapper());
+    }
+
+    @Test
+    void getAlignments_mapsAllPersistedEntitiesToResponses() {
+        Alignment alignment = new Alignment();
+        alignment.setCensusId("1");
+        alignment.setName("Good");
+        when(alignmentRepository.findAll()).thenReturn(List.of(alignment));
+
+        List<AlignmentResponse> responses = gameDataService.getAlignments();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().getCensusId()).isEqualTo("1");
+        assertThat(responses.getFirst().getName()).isEqualTo("Good");
+    }
+
+    @Test
+    void getAllies_mapsAllPersistedEntitiesToResponses() {
+        Ally ally = new Ally();
+        ally.setCensusId("1");
+        ally.setName("Batman");
+        when(allyRepository.findAll()).thenReturn(List.of(ally));
+
+        List<AllyResponse> responses = gameDataService.getAllies();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().getCensusId()).isEqualTo("1");
+        assertThat(responses.getFirst().getName()).isEqualTo("Batman");
+    }
+
+    @Test
+    void getArtifacts_mapsAllPersistedEntitiesToResponses() {
+        Artifact artifact = new Artifact();
+        artifact.setCensusId("1");
+        artifact.setName("Heart of Darkness");
+        artifact.setImageUrl("https://example.com/artifact.png");
+        artifact.setDiscordEmojiId("123456789");
+        when(artifactRepository.findAll()).thenReturn(List.of(artifact));
+
+        List<ArtifactResponse> responses = gameDataService.getArtifacts();
+
+        assertThat(responses).hasSize(1);
+        ArtifactResponse response = responses.getFirst();
+        assertThat(response.getCensusId()).isEqualTo("1");
+        assertThat(response.getName()).isEqualTo("Heart of Darkness");
+        assertThat(response.getImageUrl()).isEqualTo("https://example.com/artifact.png");
+        assertThat(response.getDiscordEmojiId()).isEqualTo("123456789");
+    }
+
+    @Test
+    void getGenders_mapsAllPersistedEntitiesToResponses() {
+        Gender gender = new Gender();
+        gender.setCensusId("1");
+        gender.setName("Female");
+        gender.setImageUrl("https://example.com/gender.png");
+        when(genderRepository.findAll()).thenReturn(List.of(gender));
+
+        List<GenderResponse> responses = gameDataService.getGenders();
+
+        assertThat(responses).hasSize(1);
+        GenderResponse response = responses.getFirst();
+        assertThat(response.getCensusId()).isEqualTo("1");
+        assertThat(response.getName()).isEqualTo("Female");
+        assertThat(response.getImageUrl()).isEqualTo("https://example.com/gender.png");
+    }
+
+    @Test
+    void getGuildAlignments_mapsAllPersistedEntitiesToResponses() {
+        GuildAlignment guildAlignment = new GuildAlignment();
+        guildAlignment.setCensusId("1");
+        guildAlignment.setName("Hero");
+        when(guildAlignmentRepository.findAll()).thenReturn(List.of(guildAlignment));
+
+        List<GuildAlignmentResponse> responses = gameDataService.getGuildAlignments();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().getCensusId()).isEqualTo("1");
+        assertThat(responses.getFirst().getName()).isEqualTo("Hero");
+    }
+
+    @Test
+    void getMovementModes_mapsAllPersistedEntitiesToResponses() {
+        MovementMode movementMode = new MovementMode();
+        movementMode.setCensusId("1");
+        movementMode.setName("Flight");
+        when(movementModeRepository.findAll()).thenReturn(List.of(movementMode));
+
+        List<MovementModeResponse> responses = gameDataService.getMovementModes();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().getCensusId()).isEqualTo("1");
+        assertThat(responses.getFirst().getName()).isEqualTo("Flight");
+    }
+
+    @Test
+    void getPersonalities_mapsAllPersistedEntitiesToResponses() {
+        Personality personality = new Personality();
+        personality.setCensusId("1");
+        personality.setName("Fierce");
+        when(personalityRepository.findAll()).thenReturn(List.of(personality));
+
+        List<PersonalityResponse> responses = gameDataService.getPersonalities();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().getCensusId()).isEqualTo("1");
+        assertThat(responses.getFirst().getName()).isEqualTo("Fierce");
+    }
+
+    @Test
+    void getPowerTypes_mapsAllPersistedEntitiesToResponses() {
+        PowerType powerType = new PowerType();
+        powerType.setCensusId("1");
+        powerType.setName("Fire");
+        when(powerTypeRepository.findAll()).thenReturn(List.of(powerType));
+
+        List<PowerTypeResponse> responses = gameDataService.getPowerTypes();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().getCensusId()).isEqualTo("1");
+        assertThat(responses.getFirst().getName()).isEqualTo("Fire");
+    }
+
+    @Test
+    void getAlignments_returnsEmptyListWhenNoneArePersisted() {
+        when(alignmentRepository.findAll()).thenReturn(List.of());
+
+        assertThat(gameDataService.getAlignments()).isEmpty();
     }
 
     @Test

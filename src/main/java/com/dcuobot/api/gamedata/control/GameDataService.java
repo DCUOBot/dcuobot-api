@@ -1,5 +1,6 @@
 package com.dcuobot.api.gamedata.control;
 
+import com.dcuobot.api.gamedata.dto.*;
 import com.dcuobot.api.gamedata.entity.*;
 import com.dcuobot.api.gamedata.repository.*;
 import com.dcuobot.api.gamedata.resource.*;
@@ -18,15 +19,20 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
- * Seeds the game data reference tables (alignments, allies, artifacts, genders,
- * guild alignments, movement modes, personalities, power types) from the bundled
- * classpath JSON files.
+ * Reads and seeds the game data reference tables (alignments, allies,
+ * artifacts, genders, guild alignments, movement modes, personalities, power
+ * types).
  * <p>
- * Each {@code loadDefault*} method is idempotent: entries whose census ID already
- * exists in the corresponding repository are skipped, so these methods are safe
- * to call repeatedly (e.g., on every application startup).
+ * Each {@code get*} method returns the entries currently persisted in the
+ * corresponding repository, mapped to their response DTO.
+ * <p>
+ * Each {@code loadDefault*} method seeds a repository from its bundled
+ * classpath JSON file. These methods are idempotent: entries whose census ID
+ * already exists in the corresponding repository are skipped, so they are
+ * safe to call repeatedly (e.g., on every application startup).
  */
 @Service
 @RequiredArgsConstructor
@@ -67,6 +73,102 @@ public class GameDataService {
 
     @Value("classpath:gamedata/power_types.json")
     private Resource powerTypesJson;
+
+    /**
+     * Returns all persisted alignments.
+     *
+     * @return the alignments currently stored in the repository
+     */
+    public List<AlignmentResponse> getAlignments() {
+        return alignmentRepository.findAll()
+                .stream()
+                .map(AlignmentResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all persisted allies.
+     *
+     * @return the allies currently stored in the repository
+     */
+    public List<AllyResponse> getAllies() {
+        return allyRepository.findAll()
+                .stream()
+                .map(AllyResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all persisted artifacts.
+     *
+     * @return the artifacts currently stored in the repository
+     */
+    public List<ArtifactResponse> getArtifacts() {
+        return artifactRepository.findAll()
+                .stream()
+                .map(ArtifactResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all persisted genders.
+     *
+     * @return the genders currently stored in the repository
+     */
+    public List<GenderResponse> getGenders() {
+        return genderRepository.findAll()
+                .stream()
+                .map(GenderResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all persisted guild alignments.
+     *
+     * @return the guild alignments currently stored in the repository
+     */
+    public List<GuildAlignmentResponse> getGuildAlignments() {
+        return guildAlignmentRepository.findAll()
+                .stream()
+                .map(GuildAlignmentResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all persisted movement modes.
+     *
+     * @return the movement modes currently stored in the repository
+     */
+    public List<MovementModeResponse> getMovementModes() {
+        return movementModeRepository.findAll()
+                .stream()
+                .map(MovementModeResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all persisted personalities.
+     *
+     * @return the personalities currently stored in the repository
+     */
+    public List<PersonalityResponse> getPersonalities() {
+        return personalityRepository.findAll()
+                .stream()
+                .map(PersonalityResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all persisted power types.
+     *
+     * @return the power types currently stored in the repository
+     */
+    public List<PowerTypeResponse> getPowerTypes() {
+        return powerTypeRepository.findAll()
+                .stream()
+                .map(PowerTypeResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
 
     /**
      * Loads alignments from {@code alignments.json} and persists any that are
