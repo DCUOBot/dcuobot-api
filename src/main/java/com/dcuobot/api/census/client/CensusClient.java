@@ -1,5 +1,6 @@
 package com.dcuobot.api.census.client;
 
+import com.dcuobot.api.census.dto.character.CensusCharacterGenderList;
 import com.dcuobot.api.census.dto.character.CensusCharacterGuildList;
 import com.dcuobot.api.census.dto.character.CensusCharacterItemList;
 import com.dcuobot.api.census.dto.character.CensusCharacterList;
@@ -77,5 +78,13 @@ public interface CensusClient {
                 "999",
                 "character_id,equipment_slot_id,item_id"
         );
+    }
+
+    @GetMapping(value = "/get/dcuo/character", produces = MediaType.APPLICATION_JSON_VALUE)
+    CensusCharacterGenderList getCharacterGender(@RequestParam("character_id") String characterId,
+                                                 @RequestParam("c%3Ashow") String cShow);
+
+    default CensusCharacterGenderList getCharacterGender(String characterId) {
+        return getCharacterGender(characterId, "character_id,gender_id");
     }
 }

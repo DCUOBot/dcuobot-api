@@ -15,9 +15,16 @@ import com.dcuobot.api.gamedata.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -369,6 +376,133 @@ class CharacterServiceTest {
         CharacterResponse response = characterService.getCharacter("Batman", "1000");
 
         assertThat(response.getGender()).isEqualTo("Female");
+    }
+
+    @Test
+    void getCharacterImage_returnsPaperdollImage_whenPaperdollExists() throws IOException {
+        try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
+            BufferedImage paperdoll = mock(BufferedImage.class);
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(paperdoll);
+            stubImageWrite(imageIO, paperdoll, "paperdoll-bytes");
+
+            byte[] result = characterService.getCharacterImage("100", "0");
+
+            assertThat(result).isEqualTo("paperdoll-bytes".getBytes(StandardCharsets.UTF_8));
+            verifyNoInteractions(censusClient, genderRepository);
+        }
+    }
+
+    @Test
+    void getCharacterImage_fallsBackToGenderImage_whenPaperdollNotFound() throws IOException {
+        try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
+
+            BufferedImage fallback = mock(BufferedImage.class);
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/gender.png"))).thenReturn(fallback);
+            stubImageWrite(imageIO, fallback, "fallback-bytes");
+
+            Gender gender = new Gender();
+            gender.setImageUrl("https://example.com/gender.png");
+            when(genderRepository.findByCensusId("0")).thenReturn(Optional.of(gender));
+
+            byte[] result = characterService.getCharacterImage("100", "0");
+
+            assertThat(result).isEqualTo("fallback-bytes".getBytes(StandardCharsets.UTF_8));
+            verifyNoInteractions(censusClient);
+        }
+    }
+
+    @Test
+    void getCharacterImage_fallsBackToGenderImage_whenPaperdollReadThrowsIOException() throws IOException {
+        try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenThrow(new IOException("unreachable"));
+
+            BufferedImage fallback = mock(BufferedImage.class);
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/gender.png"))).thenReturn(fallback);
+            stubImageWrite(imageIO, fallback, "fallback-bytes");
+
+            Gender gender = new Gender();
+            gender.setImageUrl("https://example.com/gender.png");
+            when(genderRepository.findByCensusId("0")).thenReturn(Optional.of(gender));
+
+            byte[] result = characterService.getCharacterImage("100", "0");
+
+            assertThat(result).isEqualTo("fallback-bytes".getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    @Test
+    void getCharacterImage_looksUpGenderFromCensus_whenGenderIdIsBlank() throws IOException {
+        try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
+
+            CensusCharacterGender censusGender = new CensusCharacterGender();
+            censusGender.setGenderId("1");
+            CensusCharacterGenderList genderList = new CensusCharacterGenderList();
+            genderList.setCharacterList(List.of(censusGender));
+            when(censusClient.getCharacterGender("100")).thenReturn(genderList);
+
+            Gender gender = new Gender();
+            gender.setImageUrl("https://example.com/female.png");
+            when(genderRepository.findByCensusId("1")).thenReturn(Optional.of(gender));
+
+            BufferedImage fallback = mock(BufferedImage.class);
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/female.png"))).thenReturn(fallback);
+            stubImageWrite(imageIO, fallback, "fallback-bytes");
+
+            byte[] result = characterService.getCharacterImage("100", " ");
+
+            assertThat(result).isEqualTo("fallback-bytes".getBytes(StandardCharsets.UTF_8));
+            verify(censusClient).getCharacterGender("100");
+        }
+    }
+
+    @Test
+    void getCharacterImage_throwsCensusException_whenGenderLookupResponseIsNull() throws IOException {
+        try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
+            when(censusClient.getCharacterGender("100")).thenReturn(null);
+
+            assertThatThrownBy(() -> characterService.getCharacterImage("100", null))
+                    .isInstanceOf(CensusException.class);
+        }
+    }
+
+    @Test
+    void getCharacterImage_throwsCharacterNotFoundException_whenGenderLookupListIsEmpty() throws IOException {
+        try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
+            CensusCharacterGenderList genderList = new CensusCharacterGenderList();
+            genderList.setCharacterList(List.of());
+            when(censusClient.getCharacterGender("100")).thenReturn(genderList);
+
+            assertThatThrownBy(() -> characterService.getCharacterImage("100", null))
+                    .isInstanceOf(CharacterNotFoundException.class);
+        }
+    }
+
+    @Test
+    void getCharacterImage_throwsMissingDataException_whenGenderNotInRepository() throws IOException {
+        try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
+            when(genderRepository.findByCensusId("0")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> characterService.getCharacterImage("100", "0"))
+                    .isInstanceOf(MissingDataException.class);
+        }
+    }
+
+    private static URL urlEndingWith(String suffix) {
+        return argThat(url -> url != null && url.toString().endsWith(suffix));
+    }
+
+    private void stubImageWrite(MockedStatic<ImageIO> imageIO, BufferedImage image, String content) {
+        imageIO.when(() -> ImageIO.write(eq(image), eq("png"), any(OutputStream.class)))
+                .thenAnswer(invocation -> {
+                    OutputStream out = invocation.getArgument(2);
+                    out.write(content.getBytes(StandardCharsets.UTF_8));
+                    return true;
+                });
     }
 
     private CensusCharacter defaultCharacter() {

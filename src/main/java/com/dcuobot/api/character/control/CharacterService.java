@@ -8,10 +8,16 @@ import com.dcuobot.api.character.dto.*;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
+import com.dcuobot.api.gamedata.entity.Gender;
 import com.dcuobot.api.gamedata.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +31,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CharacterService {
+    private final static String PAPERDOLL_URL = "https://census-proxy.dcuo.bot/files/dcuo/images/character/paperdoll";
+
     private final CensusClient censusClient;
 
     private final WorldIdHelpers worldIdHelpers;
@@ -45,9 +53,9 @@ public class CharacterService {
      *                name is under 3 characters, in which case a wildcard search is used
      * @param worldId the world (server) id the character belongs to
      * @return the assembled character response
-     * @throws CensusException             if the Census API is unreachable or returns malformed data
-     * @throws CharacterNotFoundException   if no character matches the given name/world
-     * @throws MissingDataException         if reference data required to resolve the character is missing
+     * @throws CensusException            if the Census API is unreachable or returns malformed data
+     * @throws CharacterNotFoundException if no character matches the given name/world
+     * @throws MissingDataException       if reference data required to resolve the character is missing
      */
     public CharacterResponse getCharacter(String name, String worldId)
             throws InvalidWorldIdException, CensusException, CharacterNotFoundException {
@@ -84,9 +92,64 @@ public class CharacterService {
     }
 
     /**
+     * Fetches a character's paperdoll image, falling back to a gender-based placeholder image
+     * when no rendered paperdoll is available for the character.
+     *
+     * @param characterId the character's Census id
+     * @param genderId    the character's gender id, used to resolve the fallback image; if
+     *                    {@code null} or blank and a fallback is needed, the gender is looked
+     *                    up from Census
+     * @return the image bytes, PNG-encoded
+     * @throws IOException                if the resolved image cannot be read or re-encoded
+     * @throws CensusException            if the Census API is unreachable or returns malformed data
+     * @throws CharacterNotFoundException if no character is returned when resolving the gender
+     * @throws MissingDataException       if the resolved gender has no matching reference data
+     */
+    public byte[] getCharacterImage(String characterId, String genderId) throws IOException {
+        BufferedImage image = null;
+
+        try {
+            image = ImageIO.read(URI.create(PAPERDOLL_URL + "/" + characterId).toURL());
+        } catch (IOException ignored) {
+        }
+
+        if (image == null) {
+            String gId = genderId;
+
+            if (gId == null || gId.trim().isEmpty()) {
+                CensusCharacterGenderList genderList = censusClient.getCharacterGender(characterId);
+
+                if (genderList == null || genderList.getCharacterList() == null) {
+                    throw new CensusException();
+                }
+
+                CensusCharacterGender gender = genderList.getCharacterList()
+                        .stream()
+                        .findFirst()
+                        .orElseThrow(CharacterNotFoundException::new);
+
+                gId = gender.getGenderId();
+            }
+
+            Gender gender = genderRepository.findByCensusId(gId).orElseThrow(MissingDataException::new);
+
+            image = ImageIO.read(URI.create(gender.getImageUrl()).toURL());
+        }
+
+        byte[] result;
+
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            ImageIO.write(image, "png", out);
+            result = out.toByteArray();
+        }
+
+        return result;
+    }
+
+    /**
      * Fetches the character matching {@code name}/{@code worldId} from Census.
      *
-     * @throws CensusException           if Census is unreachable or the response is malformed
+     * @throws CensusException            if Census is unreachable or the response is malformed
      * @throws CharacterNotFoundException if no character is returned for the query
      */
     private CensusCharacter fetchCharacter(String name, String worldId) {
@@ -158,7 +221,9 @@ public class CharacterService {
         return artifacts;
     }
 
-    /** Finds the item equipped in {@code slotId}, if any, and resolves/adds it as an artifact. */
+    /**
+     * Finds the item equipped in {@code slotId}, if any, and resolves/adds it as an artifact.
+     */
     private void addArtifactBySlot(Collection<CharacterArtifactResponse> artifacts, CensusCharacterItem[] items, String slotId) {
         Arrays.stream(items)
                 .filter(item -> item.getEquipmentSlotId().equals(slotId))
@@ -166,7 +231,9 @@ public class CharacterService {
                 .ifPresent(item -> addArtifact(artifacts, item));
     }
 
-    /** Resolves {@code item} against the {@link ArtifactRepository} and adds it if known. */
+    /**
+     * Resolves {@code item} against the {@link ArtifactRepository} and adds it if known.
+     */
     private void addArtifact(Collection<CharacterArtifactResponse> artifacts, CensusCharacterItem item) {
         artifactRepository.findByCensusId(item.getItemId())
                 .ifPresent(artifact -> artifacts.add(CharacterArtifactResponse.fromEntity(artifact)));
@@ -207,7 +274,9 @@ public class CharacterService {
                 )));
     }
 
-    /** Bounds-checked array access, returning empty instead of throwing when {@code index} is out of range. */
+    /**
+     * Bounds-checked array access, returning empty instead of throwing when {@code index} is out of range.
+     */
     private static Optional<CensusCharacterItem> itemAt(CensusCharacterItem[] items, int index) {
         return index < items.length && items[index] != null
                 ? Optional.of(items[index])
@@ -245,7 +314,9 @@ public class CharacterService {
         return characterGuildResponse;
     }
 
-    /** Maps the character's raw Census stat fields to the stats response, defaulting missing values to zero. */
+    /**
+     * Maps the character's raw Census stat fields to the stats response, defaulting missing values to zero.
+     */
     private CharacterStatsResponse buildStats(CensusCharacter character) {
         CharacterStatsResponse characterStats = new CharacterStatsResponse();
         characterStats.setHealth(parseIntOrZero(character.getMaxHealth()));
@@ -260,7 +331,9 @@ public class CharacterService {
         return characterStats;
     }
 
-    /** Parses {@code value} as an integer, treating {@code null} as zero. */
+    /**
+     * Parses {@code value} as an integer, treating {@code null} as zero.
+     */
     private static int parseIntOrZero(String value) {
         return value != null ? Integer.parseInt(value) : 0;
     }
