@@ -458,7 +458,7 @@ class CharacterServiceTest {
     }
 
     @Test
-    void getCharacterImage_throwsCensusException_whenGenderLookupResponseIsNull() throws IOException {
+    void getCharacterImage_throwsCensusException_whenGenderLookupResponseIsNull() {
         try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
             imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
             when(censusClient.getCharacterGender("100")).thenReturn(null);
@@ -469,7 +469,7 @@ class CharacterServiceTest {
     }
 
     @Test
-    void getCharacterImage_throwsCharacterNotFoundException_whenGenderLookupListIsEmpty() throws IOException {
+    void getCharacterImage_throwsCharacterNotFoundException_whenGenderLookupListIsEmpty() {
         try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
             imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
             CensusCharacterGenderList genderList = new CensusCharacterGenderList();
@@ -482,7 +482,7 @@ class CharacterServiceTest {
     }
 
     @Test
-    void getCharacterImage_throwsMissingDataException_whenGenderNotInRepository() throws IOException {
+    void getCharacterImage_throwsMissingDataException_whenGenderNotInRepository() {
         try (MockedStatic<ImageIO> imageIO = mockStatic(ImageIO.class)) {
             imageIO.when(() -> ImageIO.read(urlEndingWith("/paperdoll/100"))).thenReturn(null);
             when(genderRepository.findByCensusId("0")).thenReturn(Optional.empty());
