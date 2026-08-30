@@ -1,6 +1,7 @@
 package com.dcuobot.api.character.api;
 
 import com.dcuobot.api.census.exception.CensusException;
+import com.dcuobot.api.census.exception.MissingDataException;
 import com.dcuobot.api.character.control.CharacterService;
 import com.dcuobot.api.character.dto.*;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
@@ -12,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -113,6 +116,62 @@ class CharacterApiTest {
         assertThatThrownBy(() ->
                 mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("worldId", "1000")))
                 .hasRootCauseInstanceOf(CensusException.class);
+    }
+
+    @Test
+    void getCharacterImage_returnsPngImage_whenGenderIdIsProvided() throws Exception {
+        byte[] image = "image-bytes".getBytes(StandardCharsets.UTF_8);
+        when(characterService.getCharacterImage("100", "1")).thenReturn(image);
+
+        mockMvc.perform(get("/v1/census/characters/100/image").param("genderId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_PNG))
+                .andExpect(content().bytes(image));
+    }
+
+    @Test
+    void getCharacterImage_returnsPngImage_whenGenderIdIsOmitted() throws Exception {
+        byte[] image = "image-bytes".getBytes(StandardCharsets.UTF_8);
+        when(characterService.getCharacterImage("100", null)).thenReturn(image);
+
+        mockMvc.perform(get("/v1/census/characters/100/image"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_PNG))
+                .andExpect(content().bytes(image));
+
+        verify(characterService).getCharacterImage("100", null);
+    }
+
+    @Test
+    void getCharacterImage_propagatesException_whenCensusIsUnreachable() throws IOException {
+        when(characterService.getCharacterImage("100", null)).thenThrow(new CensusException());
+
+        assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
+                .hasRootCauseInstanceOf(CensusException.class);
+    }
+
+    @Test
+    void getCharacterImage_propagatesException_whenCharacterGenderNotFound() throws IOException {
+        when(characterService.getCharacterImage("100", null)).thenThrow(new CharacterNotFoundException());
+
+        assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
+                .hasRootCauseInstanceOf(CharacterNotFoundException.class);
+    }
+
+    @Test
+    void getCharacterImage_propagatesException_whenGenderReferenceDataIsMissing() throws IOException {
+        when(characterService.getCharacterImage("100", null)).thenThrow(new MissingDataException());
+
+        assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
+                .hasRootCauseInstanceOf(MissingDataException.class);
+    }
+
+    @Test
+    void getCharacterImage_propagatesException_whenImageCannotBeRead() throws Exception {
+        when(characterService.getCharacterImage("100", null)).thenThrow(new IOException("unreachable"));
+
+        assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
+                .isInstanceOf(IOException.class);
     }
 
     private CharacterResponse fullCharacterResponse() {
