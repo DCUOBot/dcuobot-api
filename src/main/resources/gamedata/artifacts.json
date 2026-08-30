@@ -1,0 +1,872 @@
+[
+  {
+    "id": "5151620",
+    "name": "Tetrahedron of Urgrund",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/tetrahedron_of_urgrund.png",
+    "discordEmojiId": "1067780773727445023"
+  },
+  {
+    "id": "8326683",
+    "name": "Tetrahedron of Urgrund",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/tetrahedron_of_urgrund.png",
+    "discordEmojiId": "1067780773727445023"
+  },
+  {
+    "id": "8341832",
+    "name": "Tetrahedron of Urgrund",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/tetrahedron_of_urgrund.png",
+    "discordEmojiId": "1067780773727445023"
+  },
+  {
+    "id": "5151621",
+    "name": "Cog of Mageddon",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/cog_of_mageddon.png",
+    "discordEmojiId": "1067770608928174120"
+  },
+  {
+    "id": "8326684",
+    "name": "Cog of Mageddon",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/cog_of_mageddon.png",
+    "discordEmojiId": "1067770608928174120"
+  },
+  {
+    "id": "8341833",
+    "name": "Cog of Mageddon",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/cog_of_mageddon.png",
+    "discordEmojiId": "1067770608928174120"
+  },
+  {
+    "id": "5151622",
+    "name": "Starheart Fragment",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/starheart_fragment.png",
+    "discordEmojiId": "1067780771248615535"
+  },
+  {
+    "id": "8326685",
+    "name": "Starheart Fragment",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/starheart_fragment.png",
+    "discordEmojiId": "1067780771248615535"
+  },
+  {
+    "id": "8341834",
+    "name": "Starheart Fragment",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/starheart_fragment.png",
+    "discordEmojiId": "1067780771248615535"
+  },
+  {
+    "id": "5151623",
+    "name": "Entwined Rings of Azar",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/entwined_rings_of_azar.png",
+    "discordEmojiId": "1067770701852983356"
+  },
+  {
+    "id": "8326686",
+    "name": "Entwined Rings of Azar",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/entwined_rings_of_azar.png",
+    "discordEmojiId": "1067770701852983356"
+  },
+  {
+    "id": "8341835",
+    "name": "Entwined Rings of Azar",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/entwined_rings_of_azar.png",
+    "discordEmojiId": "1067770701852983356"
+  },
+  {
+    "id": "5180346",
+    "name": "Dilustel Refractor",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/dilustel_refractor.png",
+    "discordEmojiId": "1067770698891808839"
+  },
+  {
+    "id": "8326687",
+    "name": "Dilustel Refractor",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/dilustel_refractor.png",
+    "discordEmojiId": "1067770698891808839"
+  },
+  {
+    "id": "8341836",
+    "name": "Dilustel Refractor",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/dilustel_refractor.png",
+    "discordEmojiId": "1067770698891808839"
+  },
+  {
+    "id": "5271632",
+    "name": "Scrap of the Soul Cloak",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/scrap_of_the_soul_cloak.png",
+    "discordEmojiId": "1067780765649211412"
+  },
+  {
+    "id": "8326688",
+    "name": "Scrap of the Soul Cloak",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/scrap_of_the_soul_cloak.png",
+    "discordEmojiId": "1067780765649211412"
+  },
+  {
+    "id": "8341837",
+    "name": "Scrap of the Soul Cloak",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/scrap_of_the_soul_cloak.png",
+    "discordEmojiId": "1067780765649211412"
+  },
+  {
+    "id": "5271633",
+    "name": "Legionnaire's Sparring AI",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/legionnaires_sparring_ai.png",
+    "discordEmojiId": "1067770789518127195"
+  },
+  {
+    "id": "8326689",
+    "name": "Legionnaire's Sparring AI",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/legionnaires_sparring_ai.png",
+    "discordEmojiId": "1067770789518127195"
+  },
+  {
+    "id": "8341838",
+    "name": "Legionnaire's Sparring AI",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/legionnaires_sparring_ai.png",
+    "discordEmojiId": "1067770789518127195"
+  },
+  {
+    "id": "5271634",
+    "name": "Parasite's Power Harness",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/parasites_power_harness.png",
+    "discordEmojiId": "1067780754651742229"
+  },
+  {
+    "id": "8326690",
+    "name": "Parasite's Power Harness",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/parasites_power_harness.png",
+    "discordEmojiId": "1067780754651742229"
+  },
+  {
+    "id": "8341839",
+    "name": "Parasite's Power Harness",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/parasites_power_harness.png",
+    "discordEmojiId": "1067780754651742229"
+  },
+  {
+    "id": "5271635",
+    "name": "Lazarus Pit Water",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lazarus_pit_water.png",
+    "discordEmojiId": "1067770787496464425"
+  },
+  {
+    "id": "8326691",
+    "name": "Lazarus Pit Water",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lazarus_pit_water.png",
+    "discordEmojiId": "1067770787496464425"
+  },
+  {
+    "id": "8341840",
+    "name": "Lazarus Pit Water",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lazarus_pit_water.png",
+    "discordEmojiId": "1067770787496464425"
+  },
+  {
+    "id": "5274522",
+    "name": "Omegahedron",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/omegahedron.png",
+    "discordEmojiId": "1067780744786743296"
+  },
+  {
+    "id": "8326692",
+    "name": "Omegahedron",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/omegahedron.png",
+    "discordEmojiId": "1067780744786743296"
+  },
+  {
+    "id": "8341841",
+    "name": "Omegahedron",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/omegahedron.png",
+    "discordEmojiId": "1067780744786743296"
+  },
+  {
+    "id": "5286624",
+    "name": "Venom Wrist Dispenser",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/venom_wrist_dispenser.png",
+    "discordEmojiId": "1067780853016567888"
+  },
+  {
+    "id": "8326693",
+    "name": "Venom Wrist Dispenser",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/venom_wrist_dispenser.png",
+    "discordEmojiId": "1067780853016567888"
+  },
+  {
+    "id": "8341842",
+    "name": "Venom Wrist Dispenser",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/venom_wrist_dispenser.png",
+    "discordEmojiId": "1067780853016567888"
+  },
+  {
+    "id": "5286625",
+    "name": "The Demon's Fang",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/demons_fang.png",
+    "discordEmojiId": "1067770613944557609"
+  },
+  {
+    "id": "8326694",
+    "name": "The Demon's Fang",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/demons_fang.png",
+    "discordEmojiId": "1067770613944557609"
+  },
+  {
+    "id": "8341843",
+    "name": "The Demon's Fang",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/demons_fang.png",
+    "discordEmojiId": "1067770613944557609"
+  },
+  {
+    "id": "5319139",
+    "name": "Amulet of Rao",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/amulet_of_rao.png",
+    "discordEmojiId": "1067770596827615273"
+  },
+  {
+    "id": "8326695",
+    "name": "Amulet of Rao",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/amulet_of_rao.png",
+    "discordEmojiId": "1067770596827615273"
+  },
+  {
+    "id": "8341844",
+    "name": "Amulet of Rao",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/amulet_of_rao.png",
+    "discordEmojiId": "1067770596827615273"
+  },
+  {
+    "id": "5577638",
+    "name": "Bottled City Soder",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/bottled_city_soder.png",
+    "discordEmojiId": "1067770600912850984"
+  },
+  {
+    "id": "5594425",
+    "name": "Solar Amplifier",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/solar_amplifier.png",
+    "discordEmojiId": "1067780767016558633"
+  },
+  {
+    "id": "8326696",
+    "name": "Solar Amplifier",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/solar_amplifier.png",
+    "discordEmojiId": "1067780767016558633"
+  },
+  {
+    "id": "8341845",
+    "name": "Solar Amplifier",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/solar_amplifier.png",
+    "discordEmojiId": "1067780767016558633"
+  },
+  {
+    "id": "6235423",
+    "name": "Dead King's Scepter",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/dead_kings_scepter.png",
+    "discordEmojiId": "1067770612317171785"
+  },
+  {
+    "id": "8326697",
+    "name": "Dead King's Scepter",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/dead_kings_scepter.png",
+    "discordEmojiId": "1067770612317171785"
+  },
+  {
+    "id": "8341846",
+    "name": "Dead King's Scepter",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/dead_kings_scepter.png",
+    "discordEmojiId": "1067770612317171785"
+  },
+  {
+    "id": "6238273",
+    "name": "Manacles of Force",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/manacles_of_force.png",
+    "discordEmojiId": "1067780741099950091"
+  },
+  {
+    "id": "8326698",
+    "name": "Manacles of Force",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/manacles_of_force.png",
+    "discordEmojiId": "1067780741099950091"
+  },
+  {
+    "id": "8341847",
+    "name": "Manacles of Force",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/manacles_of_force.png",
+    "discordEmojiId": "1067780741099950091"
+  },
+  {
+    "id": "6238490",
+    "name": "Eye of Gemini",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/eye_of_gemini.png",
+    "discordEmojiId": "1067770704780599306"
+  },
+  {
+    "id": "8326699",
+    "name": "Eye of Gemini",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/eye_of_gemini.png",
+    "discordEmojiId": "1067770704780599306"
+  },
+  {
+    "id": "8341848",
+    "name": "Eye of Gemini",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/eye_of_gemini.png",
+    "discordEmojiId": "1067770704780599306"
+  },
+  {
+    "id": "6244076",
+    "name": "Orb of Arion",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/orb_of_arion.png",
+    "discordEmojiId": "1067780746644824114"
+  },
+  {
+    "id": "8326700",
+    "name": "Orb of Arion",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/orb_of_arion.png",
+    "discordEmojiId": "1067780746644824114"
+  },
+  {
+    "id": "8341849",
+    "name": "Orb of Arion",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/orb_of_arion.png",
+    "discordEmojiId": "1067780746644824114"
+  },
+  {
+    "id": "6375287",
+    "name": "Grimorium Verum",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/grimorium_verum.png",
+    "discordEmojiId": "1067770711743144006"
+  },
+  {
+    "id": "8326701",
+    "name": "Grimorium Verum",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/grimorium_verum.png",
+    "discordEmojiId": "1067770711743144006"
+  },
+  {
+    "id": "8341850",
+    "name": "Grimorium Verum",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/grimorium_verum.png",
+    "discordEmojiId": "1067770711743144006"
+  },
+  {
+    "id": "6519246",
+    "name": "Philosopher's Stone",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/philosophers_stone.png",
+    "discordEmojiId": "1067780757478703145"
+  },
+  {
+    "id": "8326702",
+    "name": "Philosopher's Stone",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/philosophers_stone.png",
+    "discordEmojiId": "1067780757478703145"
+  },
+  {
+    "id": "8341851",
+    "name": "Philosopher's Stone",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/philosophers_stone.png",
+    "discordEmojiId": "1067780757478703145"
+  },
+  {
+    "id": "6522353",
+    "name": "Claw of Aelkhünd",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/claw_of_aelkhund.png",
+    "discordEmojiId": "1067770606772289616"
+  },
+  {
+    "id": "8326703",
+    "name": "Claw of Aelkhünd",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/claw_of_aelkhund.png",
+    "discordEmojiId": "1067770606772289616"
+  },
+  {
+    "id": "8341852",
+    "name": "Claw of Aelkhünd",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/claw_of_aelkhund.png",
+    "discordEmojiId": "1067770606772289616"
+  },
+  {
+    "id": "6555906",
+    "name": "Mystic Symbol Of The Seven",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/mystic_symbol_of_the_seven.png",
+    "discordEmojiId": "1067780742580543608"
+  },
+  {
+    "id": "8326704",
+    "name": "Mystic Symbol Of The Seven",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/mystic_symbol_of_the_seven.png",
+    "discordEmojiId": "1067780742580543608"
+  },
+  {
+    "id": "8341853",
+    "name": "Mystic Symbol Of The Seven",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/mystic_symbol_of_the_seven.png",
+    "discordEmojiId": "1067780742580543608"
+  },
+  {
+    "id": "6686003",
+    "name": "B.O.P. Commlink",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/bop_commlink.png",
+    "discordEmojiId": "1067770599402917890"
+  },
+  {
+    "id": "8326705",
+    "name": "B.O.P. Commlink",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/bop_commlink.png",
+    "discordEmojiId": "1067770599402917890"
+  },
+  {
+    "id": "8341854",
+    "name": "B.O.P. Commlink",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/bop_commlink.png",
+    "discordEmojiId": "1067770599402917890"
+  },
+  {
+    "id": "6793038",
+    "name": "The Strategist Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/strategist_card.png",
+    "discordEmojiId": "1067780848851632199"
+  },
+  {
+    "id": "8326706",
+    "name": "The Strategist Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/strategist_card.png",
+    "discordEmojiId": "1067780848851632199"
+  },
+  {
+    "id": "8341855",
+    "name": "The Strategist Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/strategist_card.png",
+    "discordEmojiId": "1067780848851632199"
+  },
+  {
+    "id": "6793107",
+    "name": "The La-Mort Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/la_mort_card.png",
+    "discordEmojiId": "1067770715933257759"
+  },
+  {
+    "id": "8326707",
+    "name": "The La-Mort Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/la_mort_card.png",
+    "discordEmojiId": "1067770715933257759"
+  },
+  {
+    "id": "8341856",
+    "name": "The La-Mort Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/la_mort_card.png",
+    "discordEmojiId": "1067770715933257759"
+  },
+  {
+    "id": "6794485",
+    "name": "Page of Destiny",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/page_of_destiny.png",
+    "discordEmojiId": "1067780751711555627"
+  },
+  {
+    "id": "8326708",
+    "name": "Page of Destiny",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/page_of_destiny.png",
+    "discordEmojiId": "1067780751711555627"
+  },
+  {
+    "id": "8341857",
+    "name": "Page of Destiny",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/page_of_destiny.png",
+    "discordEmojiId": "1067780751711555627"
+  },
+  {
+    "id": "6795977",
+    "name": "The Transformation Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/transformation_card.png",
+    "discordEmojiId": "1067780851447889990"
+  },
+  {
+    "id": "8326709",
+    "name": "The Transformation Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/transformation_card.png",
+    "discordEmojiId": "1067780851447889990"
+  },
+  {
+    "id": "8341858",
+    "name": "The Transformation Card",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/transformation_card.png",
+    "discordEmojiId": "1067780851447889990"
+  },
+  {
+    "id": "6796364",
+    "name": "Gem of Horus",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/gem_of_horus.png",
+    "discordEmojiId": "1067770707406229544"
+  },
+  {
+    "id": "8326710",
+    "name": "Gem of Horus",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/gem_of_horus.png",
+    "discordEmojiId": "1067770707406229544"
+  },
+  {
+    "id": "8341859",
+    "name": "Gem of Horus",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/gem_of_horus.png",
+    "discordEmojiId": "1067770707406229544"
+  },
+  {
+    "id": "6885524",
+    "name": "Everyman Prototype",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/everyman_prototype.png",
+    "discordEmojiId": "1067770703400685638"
+  },
+  {
+    "id": "8326711",
+    "name": "Everyman Prototype",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/everyman_prototype.png",
+    "discordEmojiId": "1067770703400685638"
+  },
+  {
+    "id": "8341860",
+    "name": "Everyman Prototype",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/everyman_prototype.png",
+    "discordEmojiId": "1067770703400685638"
+  },
+  {
+    "id": "6895809",
+    "name": "Source Shard",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/source_shard.png",
+    "discordEmojiId": "1067780768631369810"
+  },
+  {
+    "id": "8326712",
+    "name": "Source Shard",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/source_shard.png",
+    "discordEmojiId": "1067780768631369810"
+  },
+  {
+    "id": "8341861",
+    "name": "Source Shard",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/source_shard.png",
+    "discordEmojiId": "1067780768631369810"
+  },
+  {
+    "id": "6971511",
+    "name": "Lernaea's Amulet",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lernaeas_amulet.png",
+    "discordEmojiId": "1067780737991970847"
+  },
+  {
+    "id": "8326713",
+    "name": "Lernaea's Amulet",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lernaeas_amulet.png",
+    "discordEmojiId": "1067780737991970847"
+  },
+  {
+    "id": "8341862",
+    "name": "Lernaea's Amulet",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lernaeas_amulet.png",
+    "discordEmojiId": "1067780737991970847"
+  },
+  {
+    "id": "6972627",
+    "name": "Lasso of Truth",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lasso_of_truth.png",
+    "discordEmojiId": "1067770717170573402"
+  },
+  {
+    "id": "8326714",
+    "name": "Lasso of Truth",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lasso_of_truth.png",
+    "discordEmojiId": "1067770717170573402"
+  },
+  {
+    "id": "8341863",
+    "name": "Lasso of Truth",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/lasso_of_truth.png",
+    "discordEmojiId": "1067770717170573402"
+  },
+  {
+    "id": "6972634",
+    "name": "Purple Healing Ray",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/purple_healing_ray.png",
+    "discordEmojiId": "1067780761438142494"
+  },
+  {
+    "id": "8326715",
+    "name": "Purple Healing Ray",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/purple_healing_ray.png",
+    "discordEmojiId": "1067780761438142494"
+  },
+  {
+    "id": "8341864",
+    "name": "Purple Healing Ray",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/purple_healing_ray.png",
+    "discordEmojiId": "1067780761438142494"
+  },
+  {
+    "id": "7213674",
+    "name": "Quislet",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/quislet.png",
+    "discordEmojiId": "1067780763300401192"
+  },
+  {
+    "id": "8326716",
+    "name": "Quislet",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/quislet.png",
+    "discordEmojiId": "1067780763300401192"
+  },
+  {
+    "id": "8341865",
+    "name": "Quislet",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/quislet.png",
+    "discordEmojiId": "1067780763300401192"
+  },
+  {
+    "id": "7213762",
+    "name": "Grimbor's Chains",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/grimbors_chains.png",
+    "discordEmojiId": "1067770709264302081"
+  },
+  {
+    "id": "8326717",
+    "name": "Grimbor's Chains",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/grimbors_chains.png",
+    "discordEmojiId": "1067770709264302081"
+  },
+  {
+    "id": "8341866",
+    "name": "Grimbor's Chains",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/grimbors_chains.png",
+    "discordEmojiId": "1067770709264302081"
+  },
+  {
+    "id": "7213771",
+    "name": "Computo's Redistributor HUD",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/computos_art.png",
+    "discordEmojiId": "1067770610673000558"
+  },
+  {
+    "id": "8326718",
+    "name": "Computo's Redistributor HUD",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/computos_art.png",
+    "discordEmojiId": "1067770610673000558"
+  },
+  {
+    "id": "8341867",
+    "name": "Computo's Redistributor HUD",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/computos_art.png",
+    "discordEmojiId": "1067770610673000558"
+  },
+  {
+    "id": "7290407",
+    "name": "Pied Piper's Flute",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/pied_pipers_flute.png",
+    "discordEmojiId": "1067780758992846849"
+  },
+  {
+    "id": "8326719",
+    "name": "Pied Piper's Flute",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/pied_pipers_flute.png",
+    "discordEmojiId": "1067780758992846849"
+  },
+  {
+    "id": "8341868",
+    "name": "Pied Piper's Flute",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/pied_pipers_flute.png",
+    "discordEmojiId": "1067780758992846849"
+  },
+  {
+    "id": "7334422",
+    "name": "Circe's Mask",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/circes_mask.png",
+    "discordEmojiId": "1067770602246643742"
+  },
+  {
+    "id": "8326720",
+    "name": "Circe's Mask",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/circes_mask.png",
+    "discordEmojiId": "1067770602246643742"
+  },
+  {
+    "id": "8341869",
+    "name": "Circe's Mask",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/circes_mask.png",
+    "discordEmojiId": "1067770602246643742"
+  },
+  {
+    "id": "7985480",
+    "name": "M.E.R.C.Y. Amazotron Matrix",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/mercy_amazotron_matrix.png",
+    "discordEmojiId": "1088735077070016553"
+  },
+  {
+    "id": "8326722",
+    "name": "M.E.R.C.Y. Amazotron Matrix",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/mercy_amazotron_matrix.png",
+    "discordEmojiId": "1088735077070016553"
+  },
+  {
+    "id": "8341871",
+    "name": "M.E.R.C.Y. Amazotron Matrix",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/mercy_amazotron_matrix.png",
+    "discordEmojiId": "1088735077070016553"
+  },
+  {
+    "id": "7767690",
+    "name": "The Clarion",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/the_clarion.png",
+    "discordEmojiId": "1088736304847667200"
+  },
+  {
+    "id": "8326721",
+    "name": "The Clarion",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/the_clarion.png",
+    "discordEmojiId": "1088736304847667200"
+  },
+  {
+    "id": "8341870",
+    "name": "The Clarion",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/the_clarion.png",
+    "discordEmojiId": "1088736304847667200"
+  },
+  {
+    "id": "8125260",
+    "name": "Heart of Isis",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/heart_of_isis.png",
+    "discordEmojiId": "1088737520168210443"
+  },
+  {
+    "id": "8326723",
+    "name": "Heart of Isis",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/heart_of_isis.png",
+    "discordEmojiId": "1088737520168210443"
+  },
+  {
+    "id": "8341872",
+    "name": "Heart of Isis",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/heart_of_isis.png",
+    "discordEmojiId": "1088737520168210443"
+  },
+  {
+    "id": "8200756",
+    "name": "Ebon's Untethered Shadow",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/ebons_untethered_shadow.png",
+    "discordEmojiId": "1370700050862309426"
+  },
+  {
+    "id": "8326724",
+    "name": "Ebon's Untethered Shadow",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/ebons_untethered_shadow.png",
+    "discordEmojiId": "1370700050862309426"
+  },
+  {
+    "id": "8341873",
+    "name": "Ebon's Untethered Shadow",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/ebons_untethered_shadow.png",
+    "discordEmojiId": "1370700050862309426"
+  },
+  {
+    "id": "8225427",
+    "name": "Brand of Hecate",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/brand_of_hecate.png",
+    "discordEmojiId": "1370700511585763399"
+  },
+  {
+    "id": "8326725",
+    "name": "Brand of Hecate",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/brand_of_hecate.png",
+    "discordEmojiId": "1370700511585763399"
+  },
+  {
+    "id": "8341874",
+    "name": "Brand of Hecate",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/brand_of_hecate.png",
+    "discordEmojiId": "1370700511585763399"
+  },
+  {
+    "id": "8400559",
+    "name": "Reforged Tantu Totem",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/reforged_tantu_totem.png",
+    "discordEmojiId": "1370700909071564933"
+  },
+  {
+    "id": "8426705",
+    "name": "Reforged Tantu Totem",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/reforged_tantu_totem.png",
+    "discordEmojiId": "1370700909071564933"
+  },
+  {
+    "id": "8426731",
+    "name": "Reforged Tantu Totem",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/reforged_tantu_totem.png",
+    "discordEmojiId": "1370700909071564933"
+  },
+  {
+    "id": "8418238",
+    "name": "Red Tornado Redistribution Module",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/red_tornado_redistribution_module.png",
+    "discordEmojiId": "1370701274357698673"
+  },
+  {
+    "id": "8426706",
+    "name": "Red Tornado Redistribution Module",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/red_tornado_redistribution_module.png",
+    "discordEmojiId": "1370701274357698673"
+  },
+  {
+    "id": "8426732",
+    "name": "Red Tornado Redistribution Module",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/red_tornado_redistribution_module.png",
+    "discordEmojiId": "1370701274357698673"
+  },
+  {
+    "id": "8478156",
+    "name": "The Omega Totality",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/the_omega_totality.png",
+    "discordEmojiId": "1370701663345836034"
+  },
+  {
+    "id": "8480915",
+    "name": "The Omega Totality",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/the_omega_totality.png",
+    "discordEmojiId": "1370701663345836034"
+  },
+  {
+    "id": "8480898",
+    "name": "The Omega Totality",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/the_omega_totality.png",
+    "discordEmojiId": "1370701663345836034"
+  },
+  {
+    "id": "8531809",
+    "name": "Candle of Neron",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/candle_of_neron.png",
+    "discordEmojiId": "1370702049762869248"
+  },
+  {
+    "id": "8557813",
+    "name": "Candle of Neron",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/candle_of_neron.png",
+    "discordEmojiId": "1370702049762869248"
+  },
+  {
+    "id": "8557812",
+    "name": "Candle of Neron",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/candle_of_neron.png",
+    "discordEmojiId": "1370702049762869248"
+  },
+  {
+    "id": "8616086",
+    "name": "Sinestro's Corrupted Power Ring",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/sinestros_corrupted_power_ring.webp",
+    "discordEmojiId": "1399397543275925666"
+  },
+  {
+    "id": "8655181",
+    "name": "Sinestro's Corrupted Power Ring",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/sinestros_corrupted_power_ring.webp",
+    "discordEmojiId": "1399397543275925666"
+  },
+  {
+    "id": "8655768",
+    "name": "Sinestro's Corrupted Power Ring",
+    "imageUrl": "https://dcuo.bot/assets/images/artifacts/sinestros_corrupted_power_ring.webp",
+    "discordEmojiId": "1399397543275925666"
+  }
+]

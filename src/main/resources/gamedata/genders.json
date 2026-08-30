@@ -1,0 +1,17 @@
+[
+  {
+    "id": "0",
+    "name": "Male",
+    "imageUrl": "https://dcuo.bot/assets/images/genders/male.jpeg"
+  },
+  {
+    "id": "1",
+    "name": "Female",
+    "imageUrl": "https://dcuo.bot/assets/images/genders/female.jpeg"
+  },
+  {
+    "id": "2",
+    "name": "Mixed",
+    "imageUrl": "https://dcuo.bot/assets/images/genders/mixed.jpeg"
+  }
+]
