@@ -8,6 +8,8 @@ import com.dcuobot.api.character.dto.CharacterAllyResponse;
 import com.dcuobot.api.character.dto.CharacterArtifactResponse;
 import com.dcuobot.api.character.dto.CharacterResponse;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
+import com.dcuobot.api.common.worldid.InvalidWorldIdException;
+import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.entity.*;
 import com.dcuobot.api.gamedata.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +32,8 @@ class CharacterServiceTest {
     @Mock
     private CensusClient censusClient;
     @Mock
+    private WorldIdHelpers worldIdHelpers;
+    @Mock
     private ArtifactRepository artifactRepository;
     @Mock
     private AllyRepository allyRepository;
@@ -49,8 +53,18 @@ class CharacterServiceTest {
     @BeforeEach
     void setUp() {
         characterService = new CharacterService(
-                censusClient, artifactRepository, allyRepository, alignmentRepository,
+                censusClient, worldIdHelpers, artifactRepository, allyRepository, alignmentRepository,
                 powerTypeRepository, movementModeRepository, personalityRepository, genderRepository);
+        lenient().when(worldIdHelpers.isValidWorldId("1000")).thenReturn(true);
+    }
+
+    @Test
+    void getCharacter_throwsInvalidWorldIdException_whenWorldIdIsInvalid() {
+        when(worldIdHelpers.isValidWorldId("9999")).thenReturn(false);
+
+        assertThatThrownBy(() -> characterService.getCharacter("Batman", "9999"))
+                .isInstanceOf(InvalidWorldIdException.class);
+        verifyNoInteractions(censusClient);
     }
 
     @Test

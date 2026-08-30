@@ -11,3 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+
+census:
+  base-url: https://census-test.dcuo.bot/s:test

@@ -6,6 +6,8 @@ import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
 import com.dcuobot.api.character.dto.*;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
+import com.dcuobot.api.common.worldid.InvalidWorldIdException;
+import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CharacterService {
     private final CensusClient censusClient;
+
+    private final WorldIdHelpers worldIdHelpers;
 
     private final ArtifactRepository artifactRepository;
     private final AllyRepository allyRepository;
@@ -46,7 +50,11 @@ public class CharacterService {
      * @throws MissingDataException         if reference data required to resolve the character is missing
      */
     public CharacterResponse getCharacter(String name, String worldId)
-            throws CensusException, CharacterNotFoundException {
+            throws InvalidWorldIdException, CensusException, CharacterNotFoundException {
+        if (!worldIdHelpers.isValidWorldId(worldId)) {
+            throw new InvalidWorldIdException();
+        }
+
         CensusCharacter character = fetchCharacter(name, worldId);
         CensusCharacterGuild guild = fetchGuild(character);
 
