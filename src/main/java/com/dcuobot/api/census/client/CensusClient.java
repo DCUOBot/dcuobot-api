@@ -1,9 +1,8 @@
 package com.dcuobot.api.census.client;
 
-import com.dcuobot.api.census.dto.character.CensusCharacterGenderList;
-import com.dcuobot.api.census.dto.character.CensusCharacterGuildList;
-import com.dcuobot.api.census.dto.character.CensusCharacterItemList;
-import com.dcuobot.api.census.dto.character.CensusCharacterList;
+import com.dcuobot.api.census.dto.character.*;
+import com.dcuobot.api.census.dto.guild.CensusGuildList;
+import com.dcuobot.api.census.dto.guild.CensusGuildRosterList;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -106,6 +105,42 @@ public interface CensusClient {
                 "]100",
                 "false",
                 "name,gender_id,character_id,skill_points,combat_rating,pvp_combat_rating,world_id,alignment_id,max_health,max_power,defense,dominance,might,precision,restoration,vitalization,power_type_id,movement_mode_id,personality_id,toughness"
+        );
+    }
+
+    @GetMapping(value = "/get/dcuo/guild", produces = MediaType.APPLICATION_JSON_VALUE)
+    CensusGuildList getGuild(@RequestParam("name") String name,
+                             @RequestParam("c%3Acase") String cCase,
+                             @RequestParam("world_id") String worldId,
+                             @RequestParam("c%3AexactMatchFirst") String cExactMatchFirst,
+                             @RequestParam("c%3Alimit") String cLimit,
+                             @RequestParam("c%3Ashow") String cShow);
+
+    default CensusGuildList getGuild(String name, String worldId) {
+        return getGuild(
+                name,
+                "false",
+                worldId,
+                "true",
+                "1",
+                "guild_id,name,world_id,character_alignment_id"
+        );
+    }
+
+    @GetMapping(value = "/get/dcuo/guild_roster", produces = MediaType.APPLICATION_JSON_VALUE)
+    CensusGuildRosterList getGuildRoster(@RequestParam("c%3Alimit") String cLimit,
+                                         @RequestParam("c%3Asort") String cSort,
+                                         @RequestParam("c%3Ajoin") String cJoin,
+                                         @RequestParam("on") String on,
+                                         @RequestParam("guild_id") String guildId);
+
+    default CensusGuildRosterList getGuildRoster(String guildId) {
+        return getGuildRoster(
+                "999",
+                "rank",
+                "character",
+                "character_id",
+                guildId
         );
     }
 }
