@@ -2,6 +2,7 @@ package com.dcuobot.api.character.control;
 
 import com.dcuobot.api.census.dto.character.*;
 import com.dcuobot.api.census.client.CensusClient;
+import com.dcuobot.api.census.dto.guild.CensusGuildRoster;
 import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
 import com.dcuobot.api.character.dto.CharacterAllyResponse;

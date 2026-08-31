@@ -1,4 +1,4 @@
-package com.dcuobot.api.census.dto.character;
+package com.dcuobot.api.census.dto.guild;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
