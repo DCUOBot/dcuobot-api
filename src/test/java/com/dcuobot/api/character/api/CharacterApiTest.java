@@ -9,6 +9,7 @@ import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -92,30 +93,39 @@ class CharacterApiTest {
     }
 
     @Test
-    void getCharacters_propagatesException_whenCharacterNotFound() {
+    void getCharacters_returnsNotFoundError_whenCharacterNotFound() throws Exception {
         when(characterService.getCharacter("Batman", "1000")).thenThrow(new CharacterNotFoundException());
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("worldId", "1000")))
-                .hasRootCauseInstanceOf(CharacterNotFoundException.class);
+        mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("worldId", "1000"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("Character not found."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
     }
 
     @Test
-    void getCharacters_propagatesException_whenWorldIdIsInvalid() {
+    void getCharacters_returnsBadRequestError_whenWorldIdIsInvalid() throws Exception {
         when(characterService.getCharacter("Batman", "9999")).thenThrow(new InvalidWorldIdException());
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("worldId", "9999")))
-                .hasRootCauseInstanceOf(InvalidWorldIdException.class);
+        mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("worldId", "9999"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("Invalid world id."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
     }
 
     @Test
-    void getCharacters_propagatesException_whenCensusIsUnreachable() {
+    void getCharacters_returnsBadGatewayError_whenCensusIsUnreachable() throws Exception {
         when(characterService.getCharacter("Batman", "1000")).thenThrow(new CensusException());
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("worldId", "1000")))
-                .hasRootCauseInstanceOf(CensusException.class);
+        mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("worldId", "1000"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_GATEWAY.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.BAD_GATEWAY.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("The Daybreak Games Census API did not respond."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
     }
 
     @Test
@@ -143,27 +153,40 @@ class CharacterApiTest {
     }
 
     @Test
-    void getCharacterImage_propagatesException_whenCensusIsUnreachable() throws IOException {
+    void getCharacterImage_returnsBadGatewayError_whenCensusIsUnreachable() throws Exception {
         when(characterService.getCharacterImage("100", null)).thenThrow(new CensusException());
 
-        assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
-                .hasRootCauseInstanceOf(CensusException.class);
+        mockMvc.perform(get("/v1/census/characters/100/image"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_GATEWAY.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.BAD_GATEWAY.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("The Daybreak Games Census API did not respond."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters/100/image"));
     }
 
     @Test
-    void getCharacterImage_propagatesException_whenCharacterGenderNotFound() throws IOException {
+    void getCharacterImage_returnsNotFoundError_whenCharacterGenderNotFound() throws Exception {
         when(characterService.getCharacterImage("100", null)).thenThrow(new CharacterNotFoundException());
 
-        assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
-                .hasRootCauseInstanceOf(CharacterNotFoundException.class);
+        mockMvc.perform(get("/v1/census/characters/100/image"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("Character not found."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters/100/image"));
     }
 
     @Test
-    void getCharacterImage_propagatesException_whenGenderReferenceDataIsMissing() throws IOException {
+    void getCharacterImage_returnsInternalServerError_whenGenderReferenceDataIsMissing() throws Exception {
         when(characterService.getCharacterImage("100", null)).thenThrow(new MissingDataException());
 
-        assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
-                .hasRootCauseInstanceOf(MissingDataException.class);
+        mockMvc.perform(get("/v1/census/characters/100/image"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()))
+                .andExpect(jsonPath("$.message")
+                        .value("We are missing some data for this character/league, please report this to an administrator."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters/100/image"));
     }
 
     @Test
