@@ -3,6 +3,7 @@ package com.dcuobot.api.census.client;
 import com.dcuobot.api.census.dto.character.*;
 import com.dcuobot.api.census.dto.guild.CensusGuildList;
 import com.dcuobot.api.census.dto.guild.CensusGuildRosterList;
+import com.dcuobot.api.census.dto.status.CensusGameServerStatusList;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -141,6 +142,19 @@ public interface CensusClient {
                 "character",
                 "character_id",
                 guildId
+        );
+    }
+
+    @GetMapping(value = "/get/global/game_server_status", produces = MediaType.APPLICATION_JSON_VALUE)
+    CensusGameServerStatusList getGameServerStatus(@RequestParam("c%3Alimit") String cLimit,
+                                                   @RequestParam("game_code") String gameCode,
+                                                   @RequestParam("c%3Asort") String cSort);
+
+    default CensusGameServerStatusList getGameServerStatus() {
+        return getGameServerStatus(
+                "7",
+                "dcuo",
+                "name"
         );
     }
 }
