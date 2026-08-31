@@ -8,6 +8,8 @@ import com.dcuobot.api.census.dto.guild.CensusGuildRosterCharacter;
 import com.dcuobot.api.census.dto.guild.CensusGuildRosterList;
 import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
+import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.entity.GuildAlignment;
@@ -44,6 +46,7 @@ public class GuildService {
     private final CensusClient censusClient;
 
     private final WorldIdHelpers worldIdHelpers;
+    private final SortCriteriaHelpers sortCriteriaHelpers;
 
     private final GuildRepository guildRepository;
     private final GuildAlignmentRepository guildAlignmentRepository;
@@ -81,11 +84,18 @@ public class GuildService {
      * Ranks guilds with at least {@value MIN_MEMBER_COUNT} members by {@code sort}, optionally
      * restricted to a single world, breaking ties by name.
      *
-     * @param sort          the guild field to rank by
+     * @param sort          the guild field to rank by; must be one of the supported guild sort criteria
+     *                      (e.g. {@code "averageCombatRating"}, {@code "memberCount"})
      * @param sortDirection the direction to rank in
      * @param worldId       the world (server) id to restrict the ranking to, or {@code null} for all worlds
+     * @throws InvalidSortCriteriaException if {@code sort} is not a supported sort criterion
      */
-    public List<GuildResponse> getGuildRanking(String sort, Sort.Direction sortDirection, String worldId) {
+    public List<GuildResponse> getGuildRanking(String sort, Sort.Direction sortDirection, String worldId)
+            throws InvalidSortCriteriaException {
+        if (!sortCriteriaHelpers.isValidGuildSortCriteria(sort)) {
+            throw new InvalidSortCriteriaException();
+        }
+
         Pageable pageable = PageRequest.of(0, PAGE_SIZE, Sort.by(sortDirection, sort, SECONDARY_SORT));
 
         Page<Guild> guilds = worldId != null

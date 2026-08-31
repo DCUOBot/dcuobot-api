@@ -8,6 +8,8 @@ import com.dcuobot.api.census.dto.guild.CensusGuildRosterCharacter;
 import com.dcuobot.api.census.dto.guild.CensusGuildRosterList;
 import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
+import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.entity.GuildAlignment;
@@ -52,6 +54,8 @@ class GuildServiceTest {
     @Mock
     private WorldIdHelpers worldIdHelpers;
     @Mock
+    private SortCriteriaHelpers sortCriteriaHelpers;
+    @Mock
     private GuildRepository guildRepository;
     @Mock
     private GuildAlignmentRepository guildAlignmentRepository;
@@ -60,8 +64,9 @@ class GuildServiceTest {
 
     @BeforeEach
     void setUp() {
-        guildService = new GuildService(censusClient, worldIdHelpers, guildRepository, guildAlignmentRepository);
+        guildService = new GuildService(censusClient, worldIdHelpers, sortCriteriaHelpers, guildRepository, guildAlignmentRepository);
         lenient().when(worldIdHelpers.isValidWorldId("1000")).thenReturn(true);
+        lenient().when(sortCriteriaHelpers.isValidGuildSortCriteria(anyString())).thenReturn(true);
     }
 
     @Test
@@ -313,6 +318,15 @@ class GuildServiceTest {
 
         verify(censusClient, times(1)).getGuild("Justice League", "1000");
         verify(censusClient, times(1)).getGuildRoster("500");
+    }
+
+    @Test
+    void getGuildRanking_throwsInvalidSortCriteriaException_whenSortCriteriaIsInvalid() {
+        when(sortCriteriaHelpers.isValidGuildSortCriteria("bogus")).thenReturn(false);
+
+        assertThatThrownBy(() -> guildService.getGuildRanking("bogus", Sort.Direction.DESC, null))
+                .isInstanceOf(InvalidSortCriteriaException.class);
+        verifyNoInteractions(guildRepository);
     }
 
     @Test
