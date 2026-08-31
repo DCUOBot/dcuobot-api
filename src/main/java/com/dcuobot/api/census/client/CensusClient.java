@@ -2,7 +2,6 @@ package com.dcuobot.api.census.client;
 
 import com.dcuobot.api.census.dto.character.*;
 import com.dcuobot.api.census.dto.guild.CensusGuildList;
-import com.dcuobot.api.census.dto.guild.CensusGuildRoster;
 import com.dcuobot.api.census.dto.guild.CensusGuildRosterList;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
