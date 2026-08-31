@@ -8,7 +8,7 @@ import com.dcuobot.api.character.dto.*;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
-import com.dcuobot.api.gamedata.entity.Gender;
+import com.dcuobot.api.gamedata.entity.*;
 import com.dcuobot.api.gamedata.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,10 +18,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * Assembles a {@link CharacterResponse} for a DCUO character by combining live data from the
@@ -66,13 +64,9 @@ public class CharacterService {
         CensusCharacter character = fetchCharacter(name, worldId);
         CensusCharacterGuild guild = fetchGuild(character);
 
-        CharacterResponse response = new CharacterResponse();
-        response.setCharacterId(character.getCharacterId());
-        response.setWorldId(character.getWorldId());
-        response.setName(character.getName());
+        CharacterResponse response = buildBaseCharacterResponse(character);
         response.setAlignment(alignmentRepository.findByCensusId(character.getAlignmentId())
                 .orElseThrow(MissingDataException::new).getName());
-        response.setGender(character.getGenderId().equals("0") ? "Male" : "Female");
         response.setPowerType(powerTypeRepository.findByCensusId(character.getPowerTypeId())
                 .orElseThrow(MissingDataException::new).getName());
         response.setMovementMode(movementModeRepository.findByCensusId(character.getMovementModeId())
@@ -80,10 +74,6 @@ public class CharacterService {
         response.setPersonality(personalityRepository.findByCensusId(character.getPersonalityId())
                 .orElseThrow(MissingDataException::new).getName());
         response.setImage(buildImage(character));
-        response.setCombatRating(parseIntOrZero(character.getCombatRating()));
-        response.setPvpCombatRating(parseIntOrZero(character.getPvpCombatRating()));
-        response.setSkillPoints(parseIntOrZero(character.getSkillPoints()));
-        response.setStats(buildStats(character));
         response.setGuild(buildGuildResponse(guild));
         response.setArtifacts(fetchArtifacts(character.getCharacterId()));
         response.setAllies(fetchAllies(character.getCharacterId()));
@@ -144,6 +134,45 @@ public class CharacterService {
         }
 
         return result;
+    }
+
+    /**
+     * Builds the world's character ranking, resolving each character's reference data
+     * (alignment, power type, movement mode, personality) against name lookups built once
+     * up front, rather than querying per character. Unlike {@link #getCharacter}, missing
+     * reference data is left {@code null} instead of failing the whole ranking, and guild
+     * and artifacts are omitted since the ranking endpoint doesn't return them.
+     *
+     * @throws CensusException if the Census API is unreachable or returns malformed data
+     */
+    public Collection<CharacterResponse> getCharacterRanking(String worldId, String sort) throws CensusException {
+        CensusCharacterList characterList = censusClient.getCharacterRanking(worldId, sort);
+
+        if (characterList == null || characterList.getCharacterList() == null) {
+            throw new CensusException();
+        }
+
+        Map<String, String> alignmentNames =
+                indexNamesByCensusId(alignmentRepository.findAll(), Alignment::getCensusId, Alignment::getName);
+        Map<String, String> powerTypeNames =
+                indexNamesByCensusId(powerTypeRepository.findAll(), PowerType::getCensusId, PowerType::getName);
+        Map<String, String> movementModeNames = indexNamesByCensusId(
+                movementModeRepository.findAll(), MovementMode::getCensusId, MovementMode::getName);
+        Map<String, String> personalityNames = indexNamesByCensusId(
+                personalityRepository.findAll(), Personality::getCensusId, Personality::getName);
+
+        return characterList.getCharacterList()
+                .stream()
+                .map(character -> {
+                    CharacterResponse response = buildBaseCharacterResponse(character);
+                    response.setAlignment(alignmentNames.get(character.getAlignmentId()));
+                    response.setPowerType(powerTypeNames.get(character.getPowerTypeId()));
+                    response.setMovementMode(movementModeNames.get(character.getMovementModeId()));
+                    response.setPersonality(personalityNames.get(character.getPersonalityId()));
+                    response.setImage(buildImage(character));
+                    return response;
+                })
+                .toList();
     }
 
     /**
@@ -336,5 +365,47 @@ public class CharacterService {
      */
     private static int parseIntOrZero(String value) {
         return value != null ? Integer.parseInt(value) : 0;
+    }
+
+    /**
+     * Builds the fields common to every character response (identity, gender label, ratings,
+     * stats), shared by {@link #getCharacter} and {@link #getCharacterRanking}. Callers are
+     * responsible for resolving and setting alignment, power type, movement mode, personality,
+     * image, guild, artifacts, and allies, since those differ between the two use cases.
+     */
+    private CharacterResponse buildBaseCharacterResponse(CensusCharacter character) {
+        CharacterResponse response = new CharacterResponse();
+        response.setCharacterId(character.getCharacterId());
+        response.setWorldId(character.getWorldId());
+        response.setName(character.getName());
+        response.setGender(resolveGenderLabel(character.getGenderId()));
+        response.setCombatRating(parseIntOrZero(character.getCombatRating()));
+        response.setPvpCombatRating(parseIntOrZero(character.getPvpCombatRating()));
+        response.setSkillPoints(parseIntOrZero(character.getSkillPoints()));
+        response.setStats(buildStats(character));
+        return response;
+    }
+
+    /**
+     * Resolves a Census gender id to its display label. Census only models two genders, with
+     * {@code "0"} representing male.
+     */
+    private static String resolveGenderLabel(String genderId) {
+        return "0".equals(genderId) ? "Male" : "Female";
+    }
+
+    /**
+     * Indexes {@code items} by census id, for O(1) name lookups instead of scanning the list
+     * once per character being resolved.
+     */
+    private static <T> Map<String, String> indexNamesByCensusId(
+            List<T> items, Function<T, String> censusIdExtractor, Function<T, String> nameExtractor) {
+        Map<String, String> namesByCensusId = new HashMap<>();
+
+        for (T item : items) {
+            namesByCensusId.put(censusIdExtractor.apply(item), nameExtractor.apply(item));
+        }
+
+        return namesByCensusId;
     }
 }
