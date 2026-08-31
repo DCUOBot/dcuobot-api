@@ -8,6 +8,8 @@ import com.dcuobot.api.census.dto.guild.CensusGuildRosterCharacter;
 import com.dcuobot.api.census.dto.guild.CensusGuildRosterList;
 import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
+import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.entity.GuildAlignment;
@@ -23,6 +25,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +35,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -46,6 +54,8 @@ class GuildServiceTest {
     @Mock
     private WorldIdHelpers worldIdHelpers;
     @Mock
+    private SortCriteriaHelpers sortCriteriaHelpers;
+    @Mock
     private GuildRepository guildRepository;
     @Mock
     private GuildAlignmentRepository guildAlignmentRepository;
@@ -54,8 +64,9 @@ class GuildServiceTest {
 
     @BeforeEach
     void setUp() {
-        guildService = new GuildService(censusClient, worldIdHelpers, guildRepository, guildAlignmentRepository);
+        guildService = new GuildService(censusClient, worldIdHelpers, sortCriteriaHelpers, guildRepository, guildAlignmentRepository);
         lenient().when(worldIdHelpers.isValidWorldId("1000")).thenReturn(true);
+        lenient().when(sortCriteriaHelpers.isValidGuildSortCriteria(anyString())).thenReturn(true);
     }
 
     @Test
@@ -307,6 +318,119 @@ class GuildServiceTest {
 
         verify(censusClient, times(1)).getGuild("Justice League", "1000");
         verify(censusClient, times(1)).getGuildRoster("500");
+    }
+
+    @Test
+    void getGuildRanking_throwsInvalidSortCriteriaException_whenSortCriteriaIsInvalid() {
+        when(sortCriteriaHelpers.isValidGuildSortCriteria("bogus")).thenReturn(false);
+
+        assertThatThrownBy(() -> guildService.getGuildRanking("bogus", Sort.Direction.DESC, null))
+                .isInstanceOf(InvalidSortCriteriaException.class);
+        verifyNoInteractions(guildRepository);
+    }
+
+    @Test
+    void getGuildRanking_queriesByWorldId_whenWorldIdIsProvided() {
+        when(guildRepository.findAllByWorldIdAndMemberCountGreaterThanEqual(any(), eq("1000"), eq(20)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        guildService.getGuildRanking("averageCombatRating", Sort.Direction.DESC, "1000");
+
+        verify(guildRepository).findAllByWorldIdAndMemberCountGreaterThanEqual(any(), eq("1000"), eq(20));
+        verify(guildRepository, never()).findAllByMemberCountGreaterThanEqual(any(), anyInt());
+    }
+
+    @Test
+    void getGuildRanking_queriesAllWorlds_whenWorldIdIsNull() {
+        when(guildRepository.findAllByMemberCountGreaterThanEqual(any(), eq(20)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        guildService.getGuildRanking("averageCombatRating", Sort.Direction.DESC, null);
+
+        verify(guildRepository).findAllByMemberCountGreaterThanEqual(any(), eq(20));
+        verify(guildRepository, never()).findAllByWorldIdAndMemberCountGreaterThanEqual(any(), anyString(), anyInt());
+    }
+
+    @Test
+    void getGuildRanking_sortsByGivenFieldThenName_inTheRequestedDirection() {
+        when(guildRepository.findAllByMemberCountGreaterThanEqual(any(), eq(20)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        guildService.getGuildRanking("averageCombatRating", Sort.Direction.ASC, null);
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(guildRepository).findAllByMemberCountGreaterThanEqual(pageableCaptor.capture(), eq(20));
+
+        Pageable pageable = pageableCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isZero();
+        assertThat(pageable.getPageSize()).isEqualTo(100);
+        assertThat(pageable.getSort())
+                .extracting(Sort.Order::getProperty, Sort.Order::getDirection)
+                .containsExactly(
+                        tuple("averageCombatRating", Sort.Direction.ASC),
+                        tuple("name", Sort.Direction.ASC));
+    }
+
+    @Test
+    void getGuildRanking_sortsDescending_whenDirectionIsDesc() {
+        when(guildRepository.findAllByMemberCountGreaterThanEqual(any(), eq(20)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        guildService.getGuildRanking("averageSkillPoints", Sort.Direction.DESC, null);
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(guildRepository).findAllByMemberCountGreaterThanEqual(pageableCaptor.capture(), eq(20));
+
+        assertThat(pageableCaptor.getValue().getSort())
+                .extracting(Sort.Order::getProperty, Sort.Order::getDirection)
+                .containsExactly(
+                        tuple("averageSkillPoints", Sort.Direction.DESC),
+                        tuple("name", Sort.Direction.DESC));
+    }
+
+    @Test
+    void getGuildRanking_mapsEachGuildInThePage() {
+        Guild justiceLeague = rankedGuild("500", "Justice League", "1000", "Good", 30, 150.0, 400.0, 300.0);
+        Guild teenTitans = rankedGuild("600", "Teen Titans", "2000", "Neutral", 25, 100.0, 350.0, 250.0);
+        when(guildRepository.findAllByMemberCountGreaterThanEqual(any(), eq(20)))
+                .thenReturn(new PageImpl<>(List.of(justiceLeague, teenTitans)));
+
+        List<GuildResponse> responses = guildService.getGuildRanking("averageCombatRating", Sort.Direction.DESC, null);
+
+        assertThat(responses)
+                .extracting(GuildResponse::getGuildId, GuildResponse::getName, GuildResponse::getWorldId,
+                        GuildResponse::getAlignment, GuildResponse::getMemberCount, GuildResponse::getAverageSkillPoints,
+                        GuildResponse::getAverageCombatRating, GuildResponse::getAveragePvpCombatRating)
+                .containsExactly(
+                        tuple("500", "Justice League", "1000", "Good", 30, 150.0, 400.0, 300.0),
+                        tuple("600", "Teen Titans", "2000", "Neutral", 25, 100.0, 350.0, 250.0));
+    }
+
+    @Test
+    void getGuildRanking_returnsEmptyList_whenNoGuildsMatch() {
+        when(guildRepository.findAllByMemberCountGreaterThanEqual(any(), eq(20)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        List<GuildResponse> responses = guildService.getGuildRanking("averageCombatRating", Sort.Direction.DESC, null);
+
+        assertThat(responses).isEmpty();
+    }
+
+    private Guild rankedGuild(String censusId, String name, String worldId, String alignmentName, int memberCount,
+                              double averageSkillPoints, double averageCombatRating, double averagePvpCombatRating) {
+        GuildAlignment alignment = new GuildAlignment();
+        alignment.setName(alignmentName);
+
+        Guild guild = new Guild();
+        guild.setCensusId(censusId);
+        guild.setName(name);
+        guild.setWorldId(worldId);
+        guild.setAlignment(alignment);
+        guild.setMemberCount(memberCount);
+        guild.setAverageSkillPoints(averageSkillPoints);
+        guild.setAverageCombatRating(averageCombatRating);
+        guild.setAveragePvpCombatRating(averagePvpCombatRating);
+        return guild;
     }
 
     private void stubGuildSearch(CensusGuild guild) {

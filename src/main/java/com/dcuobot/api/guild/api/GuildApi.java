@@ -1,6 +1,7 @@
 package com.dcuobot.api.guild.api;
 
 import com.dcuobot.api.guild.control.GuildService;
+import com.dcuobot.api.guild.dto.GuildResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/census/guilds")
@@ -25,8 +28,16 @@ public class GuildApi {
             return ResponseEntity.ok(guildService.getGuild(name, worldId));
         }
 
-        // TODO: guilds ranking
+        if (sort == null) {
+            throw new IllegalArgumentException("Either name and worldId or sort must be provided.");
+        }
 
-        return ResponseEntity.ok().build();
+        if (sortDirection == null) {
+            throw new IllegalArgumentException("sortDirection must be provided.");
+        }
+
+        List<GuildResponse> guilds = guildService.getGuildRanking(sort, sortDirection, worldId);
+
+        return ResponseEntity.ok(guilds);
     }
 }

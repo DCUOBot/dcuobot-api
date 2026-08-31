@@ -2,14 +2,18 @@ package com.dcuobot.api.guild.api;
 
 import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.guild.control.GuildService;
 import com.dcuobot.api.guild.dto.GuildCharacterResponse;
 import com.dcuobot.api.guild.dto.GuildResponse;
 import com.dcuobot.api.guild.exception.GuildNotFoundException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -61,30 +65,115 @@ class GuildApiTest {
     }
 
     @Test
-    void getGuilds_returnsEmptyOkResponse_whenNameIsMissing() throws Exception {
-        mockMvc.perform(get("/v1/census/guilds").param("worldId", "1000"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
-
-        verifyNoInteractions(guildService);
-    }
-
-    @Test
-    void getGuilds_returnsEmptyOkResponse_whenWorldIdIsMissing() throws Exception {
+    void getGuilds_returnsBadRequestError_whenNameIsProvidedWithoutWorldIdOrSort() throws Exception {
         mockMvc.perform(get("/v1/census/guilds").param("name", "Justice League"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Either name and worldId or sort must be provided."))
+                .andExpect(jsonPath("$.path").value("/v1/census/guilds"));
 
         verifyNoInteractions(guildService);
     }
 
     @Test
-    void getGuilds_returnsEmptyOkResponse_whenNoParamsProvided() throws Exception {
-        mockMvc.perform(get("/v1/census/guilds"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+    void getGuilds_returnsBadRequestError_whenWorldIdIsProvidedWithoutNameOrSort() throws Exception {
+        mockMvc.perform(get("/v1/census/guilds").param("worldId", "1000"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Either name and worldId or sort must be provided."))
+                .andExpect(jsonPath("$.path").value("/v1/census/guilds"));
 
         verifyNoInteractions(guildService);
+    }
+
+    @Test
+    void getGuilds_returnsBadRequestError_whenNoParamsProvided() throws Exception {
+        mockMvc.perform(get("/v1/census/guilds"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Either name and worldId or sort must be provided."))
+                .andExpect(jsonPath("$.path").value("/v1/census/guilds"));
+
+        verifyNoInteractions(guildService);
+    }
+
+    @Test
+    void getGuilds_returnsBadRequestError_whenSortIsProvidedWithoutSortDirection() throws Exception {
+        mockMvc.perform(get("/v1/census/guilds").param("sort", "averageCombatRating"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("sortDirection must be provided."))
+                .andExpect(jsonPath("$.path").value("/v1/census/guilds"));
+
+        verifyNoInteractions(guildService);
+    }
+
+    @Test
+    void getGuilds_returnsRanking_whenSortAndSortDirectionAreProvided() throws Exception {
+        when(guildService.getGuildRanking("averageCombatRating", Sort.Direction.DESC, null))
+                .thenReturn(List.of(rankingGuildResponse()));
+
+        mockMvc.perform(get("/v1/census/guilds").param("sort", "averageCombatRating").param("sortDirection", "DESC"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].guild_id").value("500"))
+                .andExpect(jsonPath("$[0].world_id").value("1000"))
+                .andExpect(jsonPath("$[0].name").value("Justice League"))
+                .andExpect(jsonPath("$[0].alignment").value("Good"))
+                .andExpect(jsonPath("$[0].member_count").value(30))
+                .andExpect(jsonPath("$[0].average_combat_rating").value(400.0));
+
+        verify(guildService, never()).getGuild(anyString(), anyString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"ASC", "DESC"})
+    void getGuilds_passesSortDirectionThrough(String sortDirection) throws Exception {
+        when(guildService.getGuildRanking("averageCombatRating", Sort.Direction.fromString(sortDirection), null))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/v1/census/guilds").param("sort", "averageCombatRating").param("sortDirection", sortDirection))
+                .andExpect(status().isOk());
+
+        verify(guildService).getGuildRanking("averageCombatRating", Sort.Direction.fromString(sortDirection), null);
+    }
+
+    @Test
+    void getGuilds_passesWorldIdThrough_whenWorldIdIsProvidedWithSortAndSortDirection() throws Exception {
+        when(guildService.getGuildRanking("averageCombatRating", Sort.Direction.DESC, "1000")).thenReturn(List.of());
+
+        mockMvc.perform(get("/v1/census/guilds")
+                        .param("worldId", "1000")
+                        .param("sort", "averageCombatRating")
+                        .param("sortDirection", "DESC"))
+                .andExpect(status().isOk());
+
+        verify(guildService).getGuildRanking("averageCombatRating", Sort.Direction.DESC, "1000");
+    }
+
+    @Test
+    void getGuilds_ignoresNameParam_whenWorldIdIsMissingButSortAndSortDirectionAreProvided() throws Exception {
+        when(guildService.getGuildRanking("averageCombatRating", Sort.Direction.DESC, null)).thenReturn(List.of());
+
+        mockMvc.perform(get("/v1/census/guilds")
+                        .param("name", "Justice League")
+                        .param("sort", "averageCombatRating")
+                        .param("sortDirection", "DESC"))
+                .andExpect(status().isOk());
+
+        verify(guildService, never()).getGuild(anyString(), anyString());
+        verify(guildService).getGuildRanking("averageCombatRating", Sort.Direction.DESC, null);
+    }
+
+    @Test
+    void getGuilds_returnsBadRequestError_whenSortCriteriaIsInvalid() throws Exception {
+        when(guildService.getGuildRanking("bogus", Sort.Direction.DESC, null)).thenThrow(new InvalidSortCriteriaException());
+
+        mockMvc.perform(get("/v1/census/guilds").param("sort", "bogus").param("sortDirection", "DESC"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Invalid sort criteria."))
+                .andExpect(jsonPath("$.path").value("/v1/census/guilds"));
     }
 
     @Test
@@ -136,12 +225,17 @@ class GuildApiTest {
                 .andExpect(jsonPath("$.path").value("/v1/census/guilds"));
     }
 
-    @Test
-    void getGuilds_ignoresWorldIdParam_whenNameIsMissing() throws Exception {
-        mockMvc.perform(get("/v1/census/guilds").param("worldId", "1000").param("sort", "member_count"))
-                .andExpect(status().isOk());
-
-        verify(guildService, never()).getGuild(anyString(), anyString());
+    private GuildResponse rankingGuildResponse() {
+        GuildResponse response = new GuildResponse();
+        response.setGuildId("500");
+        response.setWorldId("1000");
+        response.setName("Justice League");
+        response.setAlignment("Good");
+        response.setMemberCount(30);
+        response.setAverageSkillPoints(150.0);
+        response.setAverageCombatRating(400.0);
+        response.setAveragePvpCombatRating(300.0);
+        return response;
     }
 
     private GuildResponse fullGuildResponse() {

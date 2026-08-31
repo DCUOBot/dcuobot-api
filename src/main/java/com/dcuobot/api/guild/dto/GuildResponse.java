@@ -1,5 +1,6 @@
 package com.dcuobot.api.guild.dto;
 
+import com.dcuobot.api.guild.entity.Guild;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -30,4 +31,17 @@ public class GuildResponse {
     private double averagePvpCombatRating;
 
     private List<GuildCharacterResponse> characters;
+
+    public static GuildResponse fromEntity(Guild guild) {
+        GuildResponse response = new GuildResponse();
+        response.setGuildId(guild.getCensusId());
+        response.setName(guild.getName());
+        response.setAlignment(guild.getAlignment().getName());
+        response.setWorldId(guild.getWorldId());
+        response.setMemberCount(guild.getMemberCount());
+        response.setAverageSkillPoints(guild.getAverageSkillPoints());
+        response.setAverageCombatRating(guild.getAverageCombatRating());
+        response.setAveragePvpCombatRating(guild.getAveragePvpCombatRating());
+        return response;
+    }
 }

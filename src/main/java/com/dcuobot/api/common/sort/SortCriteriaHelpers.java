@@ -21,7 +21,18 @@ public class SortCriteriaHelpers {
             "vitalization"
     );
 
+    private static final Set<String> GUILD_SORT_CRITERIA = Set.of(
+            "memberCount",
+            "averageSkillPoints",
+            "averageCombatRating",
+            "averagePvpCombatRating"
+    );
+
     public boolean isValidCharacterSortCriteria(String sortCriteria) {
         return CHARACTER_SORT_CRITERIA.contains(sortCriteria);
+    }
+
+    public boolean isValidGuildSortCriteria(String sortCriteria) {
+        return GUILD_SORT_CRITERIA.contains(sortCriteria);
     }
 }
