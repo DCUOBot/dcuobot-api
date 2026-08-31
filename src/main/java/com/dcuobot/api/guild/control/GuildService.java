@@ -18,6 +18,10 @@ import com.dcuobot.api.guild.entity.Guild;
 import com.dcuobot.api.guild.exception.GuildNotFoundException;
 import com.dcuobot.api.guild.repository.GuildRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class GuildService {
+    private static final int MIN_MEMBER_COUNT = 20;
+    private static final int PAGE_SIZE = 100;
+    private static final String SECONDARY_SORT = "name";
+
     private final CensusClient censusClient;
 
     private final WorldIdHelpers worldIdHelpers;
@@ -67,6 +75,24 @@ public class GuildService {
         saveGuild(censusGuild, alignment, roster.size(), avgSkillPoints, avgCombatRating, avgPvpCombatRating);
 
         return buildResponse(censusGuild, alignment, roster, avgSkillPoints, avgCombatRating, avgPvpCombatRating);
+    }
+
+    /**
+     * Ranks guilds with at least {@value MIN_MEMBER_COUNT} members by {@code sort}, optionally
+     * restricted to a single world, breaking ties by name.
+     *
+     * @param sort          the guild field to rank by
+     * @param sortDirection the direction to rank in
+     * @param worldId       the world (server) id to restrict the ranking to, or {@code null} for all worlds
+     */
+    public List<GuildResponse> getGuildRanking(String sort, Sort.Direction sortDirection, String worldId) {
+        Pageable pageable = PageRequest.of(0, PAGE_SIZE, Sort.by(sortDirection, sort, SECONDARY_SORT));
+
+        Page<Guild> guilds = worldId != null
+                ? guildRepository.findAllByWorldIdAndMemberCountGreaterThanEqual(pageable, worldId, MIN_MEMBER_COUNT)
+                : guildRepository.findAllByMemberCountGreaterThanEqual(pageable, MIN_MEMBER_COUNT);
+
+        return guilds.stream().map(GuildResponse::fromEntity).collect(Collectors.toList());
     }
 
     /**
