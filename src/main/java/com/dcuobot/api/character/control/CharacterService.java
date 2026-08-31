@@ -6,6 +6,8 @@ import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
 import com.dcuobot.api.character.dto.*;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
+import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.entity.*;
@@ -34,6 +36,7 @@ public class CharacterService {
     private final CensusClient censusClient;
 
     private final WorldIdHelpers worldIdHelpers;
+    private final SortCriteriaHelpers sortCriteriaHelpers;
 
     private final ArtifactRepository artifactRepository;
     private final AllyRepository allyRepository;
@@ -143,9 +146,18 @@ public class CharacterService {
      * reference data is left {@code null} instead of failing the whole ranking, and guild
      * and artifacts are omitted since the ranking endpoint doesn't return them.
      *
-     * @throws CensusException if the Census API is unreachable or returns malformed data
+     * @param worldId the world (server) id to rank characters within
+     * @param sort    the stat to rank characters by; must be one of the supported character
+     *                sort criteria (e.g. {@code "combat_rating"}, {@code "skill_points"})
+     * @throws InvalidSortCriteriaException if {@code sort} is not a supported sort criterion
+     * @throws CensusException              if the Census API is unreachable or returns malformed data
      */
-    public Collection<CharacterResponse> getCharacterRanking(String worldId, String sort) throws CensusException {
+    public Collection<CharacterResponse> getCharacterRanking(String worldId, String sort)
+            throws CensusException, InvalidSortCriteriaException {
+        if (!sortCriteriaHelpers.isValidCharacterSortCriteria(sort)) {
+            throw new InvalidSortCriteriaException();
+        }
+
         CensusCharacterList characterList = censusClient.getCharacterRanking(worldId, sort);
 
         if (characterList == null || characterList.getCharacterList() == null) {

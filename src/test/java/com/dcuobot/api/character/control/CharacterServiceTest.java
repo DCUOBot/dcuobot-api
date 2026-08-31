@@ -8,6 +8,8 @@ import com.dcuobot.api.character.dto.CharacterAllyResponse;
 import com.dcuobot.api.character.dto.CharacterArtifactResponse;
 import com.dcuobot.api.character.dto.CharacterResponse;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
+import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.entity.*;
@@ -43,6 +45,8 @@ class CharacterServiceTest {
     @Mock
     private WorldIdHelpers worldIdHelpers;
     @Mock
+    private SortCriteriaHelpers sortCriteriaHelpers;
+    @Mock
     private ArtifactRepository artifactRepository;
     @Mock
     private AllyRepository allyRepository;
@@ -62,9 +66,11 @@ class CharacterServiceTest {
     @BeforeEach
     void setUp() {
         characterService = new CharacterService(
-                censusClient, worldIdHelpers, artifactRepository, allyRepository, alignmentRepository,
-                powerTypeRepository, movementModeRepository, personalityRepository, genderRepository);
+                censusClient, worldIdHelpers, sortCriteriaHelpers, artifactRepository, allyRepository,
+                alignmentRepository, powerTypeRepository, movementModeRepository, personalityRepository,
+                genderRepository);
         lenient().when(worldIdHelpers.isValidWorldId("1000")).thenReturn(true);
+        lenient().when(sortCriteriaHelpers.isValidCharacterSortCriteria("combat_rating")).thenReturn(true);
     }
 
     @Test
@@ -492,6 +498,15 @@ class CharacterServiceTest {
             assertThatThrownBy(() -> characterService.getCharacterImage("100", "0"))
                     .isInstanceOf(MissingDataException.class);
         }
+    }
+
+    @Test
+    void getCharacterRanking_throwsInvalidSortCriteriaException_whenSortCriteriaIsInvalid() {
+        when(sortCriteriaHelpers.isValidCharacterSortCriteria("bogus")).thenReturn(false);
+
+        assertThatThrownBy(() -> characterService.getCharacterRanking("1000", "bogus"))
+                .isInstanceOf(InvalidSortCriteriaException.class);
+        verifyNoInteractions(censusClient);
     }
 
     @Test
