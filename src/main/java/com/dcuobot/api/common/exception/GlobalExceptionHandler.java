@@ -5,6 +5,7 @@ import com.dcuobot.api.census.exception.MissingDataException;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
 import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
+import com.dcuobot.api.guild.exception.GuildNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CharacterNotFoundException.class)
     public ResponseEntity<Object> handleCharacterNotFound(CharacterNotFoundException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex, request);
+    }
+
+    @ExceptionHandler(GuildNotFoundException.class)
+    public ResponseEntity<Object> handleGuildNotFound(GuildNotFoundException ex, HttpServletRequest request) {
         return buildResponse(HttpStatus.NOT_FOUND, ex, request);
     }
 
