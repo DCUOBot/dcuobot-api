@@ -42,7 +42,8 @@ public class GuildService {
 
     /**
      * Looks up a guild by name and world and builds the full response including averaged
-     * roster stats and the deduped member list.
+     * roster stats and the deduped member list. If the guild no longer exists in Census, any
+     * cached row for it is deleted so disbanded/renamed guilds don't linger in the database.
      *
      * @throws CensusException        if the Census API is unreachable or returns malformed data
      * @throws GuildNotFoundException if no guild matches the given name/world
@@ -69,7 +70,9 @@ public class GuildService {
     }
 
     /**
-     * Fetches the guild matching {@code name}/{@code worldId} from Census.
+     * Fetches the guild matching {@code name}/{@code worldId} from Census. When Census returns
+     * no match, deletes any cached row for that name/world before failing, since a miss here
+     * means the guild was disbanded or renamed and its cached row is now stale.
      *
      * @throws CensusException        if Census is unreachable or the response is malformed
      * @throws GuildNotFoundException if no guild is returned for the query
@@ -81,10 +84,20 @@ public class GuildService {
             throw new CensusException();
         }
 
-        return guildList.getGuildList()
+        CensusGuild guild = guildList.getGuildList()
                 .stream()
                 .findFirst()
-                .orElseThrow(GuildNotFoundException::new);
+                .orElse(null);
+
+        if (guild == null) {
+            if (guildRepository.existsByNameAndWorldId(name, worldId)) {
+                guildRepository.deleteByNameAndWorldId(name, worldId);
+            }
+
+            throw new GuildNotFoundException();
+        }
+
+        return guild;
     }
 
     /**

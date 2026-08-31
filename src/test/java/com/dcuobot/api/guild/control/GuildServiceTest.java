@@ -87,12 +87,33 @@ class GuildServiceTest {
 
     @Test
     void getGuild_throwsGuildNotFoundException_whenNoGuildMatches() {
-        CensusGuildList guildList = new CensusGuildList();
-        guildList.setGuildList(List.of());
-        when(censusClient.getGuild(anyString(), anyString())).thenReturn(guildList);
+        stubGuildNotFoundInCensus();
+        when(guildRepository.existsByNameAndWorldId("Justice League", "1000")).thenReturn(false);
 
         assertThatThrownBy(() -> guildService.getGuild("Justice League", "1000"))
                 .isInstanceOf(GuildNotFoundException.class);
+    }
+
+    @Test
+    void getGuild_deletesCachedGuild_whenNoLongerFoundInCensusAndPresentInDatabase() {
+        stubGuildNotFoundInCensus();
+        when(guildRepository.existsByNameAndWorldId("Justice League", "1000")).thenReturn(true);
+
+        assertThatThrownBy(() -> guildService.getGuild("Justice League", "1000"))
+                .isInstanceOf(GuildNotFoundException.class);
+
+        verify(guildRepository).deleteByNameAndWorldId("Justice League", "1000");
+    }
+
+    @Test
+    void getGuild_doesNotDeleteCachedGuild_whenNoLongerFoundInCensusAndAbsentFromDatabase() {
+        stubGuildNotFoundInCensus();
+        when(guildRepository.existsByNameAndWorldId("Justice League", "1000")).thenReturn(false);
+
+        assertThatThrownBy(() -> guildService.getGuild("Justice League", "1000"))
+                .isInstanceOf(GuildNotFoundException.class);
+
+        verify(guildRepository, never()).deleteByNameAndWorldId(anyString(), anyString());
     }
 
     @Test
@@ -292,6 +313,12 @@ class GuildServiceTest {
         CensusGuildList guildList = new CensusGuildList();
         guildList.setGuildList(List.of(guild));
         when(censusClient.getGuild(guild.getName(), guild.getWorldId())).thenReturn(guildList);
+    }
+
+    private void stubGuildNotFoundInCensus() {
+        CensusGuildList guildList = new CensusGuildList();
+        guildList.setGuildList(List.of());
+        when(censusClient.getGuild(anyString(), anyString())).thenReturn(guildList);
     }
 
     private void stubRoster(CensusGuildRoster... entries) {
