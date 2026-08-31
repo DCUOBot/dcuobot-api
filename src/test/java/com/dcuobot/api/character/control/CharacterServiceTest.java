@@ -8,6 +8,8 @@ import com.dcuobot.api.character.dto.CharacterAllyResponse;
 import com.dcuobot.api.character.dto.CharacterArtifactResponse;
 import com.dcuobot.api.character.dto.CharacterResponse;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
+import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
 import com.dcuobot.api.gamedata.entity.*;
@@ -26,11 +28,13 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +44,8 @@ class CharacterServiceTest {
     private CensusClient censusClient;
     @Mock
     private WorldIdHelpers worldIdHelpers;
+    @Mock
+    private SortCriteriaHelpers sortCriteriaHelpers;
     @Mock
     private ArtifactRepository artifactRepository;
     @Mock
@@ -60,9 +66,11 @@ class CharacterServiceTest {
     @BeforeEach
     void setUp() {
         characterService = new CharacterService(
-                censusClient, worldIdHelpers, artifactRepository, allyRepository, alignmentRepository,
-                powerTypeRepository, movementModeRepository, personalityRepository, genderRepository);
+                censusClient, worldIdHelpers, sortCriteriaHelpers, artifactRepository, allyRepository,
+                alignmentRepository, powerTypeRepository, movementModeRepository, personalityRepository,
+                genderRepository);
         lenient().when(worldIdHelpers.isValidWorldId("1000")).thenReturn(true);
+        lenient().when(sortCriteriaHelpers.isValidCharacterSortCriteria("combat_rating")).thenReturn(true);
     }
 
     @Test
@@ -490,6 +498,186 @@ class CharacterServiceTest {
             assertThatThrownBy(() -> characterService.getCharacterImage("100", "0"))
                     .isInstanceOf(MissingDataException.class);
         }
+    }
+
+    @Test
+    void getCharacterRanking_throwsInvalidSortCriteriaException_whenSortCriteriaIsInvalid() {
+        when(sortCriteriaHelpers.isValidCharacterSortCriteria("bogus")).thenReturn(false);
+
+        assertThatThrownBy(() -> characterService.getCharacterRanking("1000", "bogus"))
+                .isInstanceOf(InvalidSortCriteriaException.class);
+        verifyNoInteractions(censusClient);
+    }
+
+    @Test
+    void getCharacterRanking_throwsCensusException_whenResponseIsNull() {
+        when(censusClient.getCharacterRanking("1000", "combat_rating")).thenReturn(null);
+
+        assertThatThrownBy(() -> characterService.getCharacterRanking("1000", "combat_rating"))
+                .isInstanceOf(CensusException.class);
+    }
+
+    @Test
+    void getCharacterRanking_throwsCensusException_whenCharacterListIsNull() {
+        CensusCharacterList characterList = new CensusCharacterList();
+        characterList.setCharacterList(null);
+        when(censusClient.getCharacterRanking("1000", "combat_rating")).thenReturn(characterList);
+
+        assertThatThrownBy(() -> characterService.getCharacterRanking("1000", "combat_rating"))
+                .isInstanceOf(CensusException.class);
+    }
+
+    @Test
+    void getCharacterRanking_returnsResolvedCharacterResponse_whenReferenceDataIsFound() {
+        CensusCharacter character = defaultCharacter();
+        stubRankingSearch(character, "combat_rating");
+        stubRankingReferenceData(character);
+
+        Collection<CharacterResponse> responses = characterService.getCharacterRanking("1000", "combat_rating");
+
+        assertThat(responses).hasSize(1);
+        CharacterResponse response = responses.iterator().next();
+        assertThat(response.getCharacterId()).isEqualTo("100");
+        assertThat(response.getWorldId()).isEqualTo("1000");
+        assertThat(response.getName()).isEqualTo("Batman");
+        assertThat(response.getAlignment()).isEqualTo("Good");
+        assertThat(response.getGender()).isEqualTo("Male");
+        assertThat(response.getPowerType()).isEqualTo("Fire");
+        assertThat(response.getMovementMode()).isEqualTo("Flight");
+        assertThat(response.getPersonality()).isEqualTo("Fierce");
+        assertThat(response.getCombatRating()).isEqualTo(500);
+        assertThat(response.getPvpCombatRating()).isEqualTo(400);
+        assertThat(response.getSkillPoints()).isEqualTo(200);
+        assertThat(response.getStats().getHealth()).isEqualTo(10000);
+        assertThat(response.getImage().getUrl())
+                .isEqualTo("https://dcuo.bot/api/v1/census/characters/100/image?genderId=0");
+        assertThat(response.getImage().getAltUrl()).isEqualTo("https://example.com/gender.png");
+        assertThat(response.getGuild()).isNull();
+        assertThat(response.getArtifacts()).isNull();
+        assertThat(response.getAllies()).isNull();
+
+        verifyNoInteractions(artifactRepository, allyRepository);
+        verify(censusClient, never()).getCharacterGuild(anyString());
+    }
+
+    @Test
+    void getCharacterRanking_mapsEachCharacterInTheList() {
+        CensusCharacter batman = defaultCharacter();
+        CensusCharacter robin = defaultCharacter();
+        robin.setCharacterId("200");
+        robin.setName("Robin");
+
+        CensusCharacterList characterList = new CensusCharacterList();
+        characterList.setCharacterList(List.of(batman, robin));
+        when(censusClient.getCharacterRanking("1000", "combat_rating")).thenReturn(characterList);
+        stubRankingReferenceData(batman);
+
+        Collection<CharacterResponse> responses = characterService.getCharacterRanking("1000", "combat_rating");
+
+        assertThat(responses)
+                .extracting(CharacterResponse::getCharacterId, CharacterResponse::getName)
+                .containsExactly(tuple("100", "Batman"), tuple("200", "Robin"));
+    }
+
+    @Test
+    void getCharacterRanking_leavesReferenceFieldsNull_whenNotFoundInRepository() {
+        CensusCharacter character = defaultCharacter();
+        stubRankingSearch(character, "combat_rating");
+        when(alignmentRepository.findAll()).thenReturn(List.of());
+        when(powerTypeRepository.findAll()).thenReturn(List.of());
+        when(movementModeRepository.findAll()).thenReturn(List.of());
+        when(personalityRepository.findAll()).thenReturn(List.of());
+        stubRankingGenderImage(character);
+
+        CharacterResponse response = characterService.getCharacterRanking("1000", "combat_rating")
+                .iterator().next();
+
+        assertThat(response.getAlignment()).isNull();
+        assertThat(response.getPowerType()).isNull();
+        assertThat(response.getMovementMode()).isNull();
+        assertThat(response.getPersonality()).isNull();
+    }
+
+    @Test
+    void getCharacterRanking_defaultsRatingsAndStatsToZero_whenCensusFieldsAreNull() {
+        CensusCharacter character = defaultCharacter();
+        character.setCombatRating(null);
+        character.setPvpCombatRating(null);
+        character.setSkillPoints(null);
+        character.setMaxHealth(null);
+        stubRankingSearch(character, "combat_rating");
+        stubRankingReferenceData(character);
+
+        CharacterResponse response = characterService.getCharacterRanking("1000", "combat_rating")
+                .iterator().next();
+
+        assertThat(response.getCombatRating()).isZero();
+        assertThat(response.getPvpCombatRating()).isZero();
+        assertThat(response.getSkillPoints()).isZero();
+        assertThat(response.getStats().getHealth()).isZero();
+    }
+
+    @Test
+    void getCharacterRanking_setsGenderFemale_whenGenderIdIsNotZero() {
+        CensusCharacter character = defaultCharacter();
+        character.setGenderId("1");
+        stubRankingSearch(character, "combat_rating");
+        stubRankingReferenceData(character);
+
+        CharacterResponse response = characterService.getCharacterRanking("1000", "combat_rating")
+                .iterator().next();
+
+        assertThat(response.getGender()).isEqualTo("Female");
+    }
+
+    @Test
+    void getCharacterRanking_throwsMissingDataException_whenGenderReferenceDataIsMissing() {
+        CensusCharacter character = defaultCharacter();
+        stubRankingSearch(character, "combat_rating");
+        when(alignmentRepository.findAll()).thenReturn(List.of());
+        when(powerTypeRepository.findAll()).thenReturn(List.of());
+        when(movementModeRepository.findAll()).thenReturn(List.of());
+        when(personalityRepository.findAll()).thenReturn(List.of());
+        when(genderRepository.findByCensusId(character.getGenderId())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> characterService.getCharacterRanking("1000", "combat_rating"))
+                .isInstanceOf(MissingDataException.class);
+    }
+
+    private void stubRankingSearch(CensusCharacter character, String sort) {
+        CensusCharacterList characterList = new CensusCharacterList();
+        characterList.setCharacterList(List.of(character));
+        when(censusClient.getCharacterRanking(character.getWorldId(), sort)).thenReturn(characterList);
+    }
+
+    private void stubRankingReferenceData(CensusCharacter character) {
+        Alignment alignment = new Alignment();
+        alignment.setCensusId(character.getAlignmentId());
+        alignment.setName("Good");
+        when(alignmentRepository.findAll()).thenReturn(List.of(alignment));
+
+        PowerType powerType = new PowerType();
+        powerType.setCensusId(character.getPowerTypeId());
+        powerType.setName("Fire");
+        when(powerTypeRepository.findAll()).thenReturn(List.of(powerType));
+
+        MovementMode movementMode = new MovementMode();
+        movementMode.setCensusId(character.getMovementModeId());
+        movementMode.setName("Flight");
+        when(movementModeRepository.findAll()).thenReturn(List.of(movementMode));
+
+        Personality personality = new Personality();
+        personality.setCensusId(character.getPersonalityId());
+        personality.setName("Fierce");
+        when(personalityRepository.findAll()).thenReturn(List.of(personality));
+
+        stubRankingGenderImage(character);
+    }
+
+    private void stubRankingGenderImage(CensusCharacter character) {
+        Gender gender = new Gender();
+        gender.setImageUrl("https://example.com/gender.png");
+        when(genderRepository.findByCensusId(character.getGenderId())).thenReturn(Optional.of(gender));
     }
 
     private static URL urlEndingWith(String suffix) {

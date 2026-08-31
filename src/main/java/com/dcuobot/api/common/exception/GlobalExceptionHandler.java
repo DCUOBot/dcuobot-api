@@ -3,6 +3,7 @@ package com.dcuobot.api.common.exception;
 import com.dcuobot.api.census.exception.CensusException;
 import com.dcuobot.api.census.exception.MissingDataException;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,16 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidWorldIdException.class)
     public ResponseEntity<Object> handleInvalidWorldId(InvalidWorldIdException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex, request);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex, request);
+    }
+
+    @ExceptionHandler(InvalidSortCriteriaException.class)
+    public ResponseEntity<Object> handleInvalidSortCriteria(InvalidSortCriteriaException ex, HttpServletRequest request) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex, request);
     }
 

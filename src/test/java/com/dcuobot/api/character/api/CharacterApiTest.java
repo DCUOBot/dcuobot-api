@@ -5,8 +5,11 @@ import com.dcuobot.api.census.exception.MissingDataException;
 import com.dcuobot.api.character.control.CharacterService;
 import com.dcuobot.api.character.dto.*;
 import com.dcuobot.api.character.exception.CharacterNotFoundException;
+import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
@@ -66,30 +69,117 @@ class CharacterApiTest {
     }
 
     @Test
-    void getCharacters_returnsEmptyOkResponse_whenNameIsMissing() throws Exception {
-        mockMvc.perform(get("/v1/census/characters").param("worldId", "1000"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
-
-        verifyNoInteractions(characterService);
-    }
-
-    @Test
-    void getCharacters_returnsEmptyOkResponse_whenWorldIdIsMissing() throws Exception {
+    void getCharacters_returnsBadRequestError_whenNameIsProvidedWithoutWorldIdOrSort() throws Exception {
         mockMvc.perform(get("/v1/census/characters").param("name", "Batman"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Either name and worldId or sort must be provided."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
 
         verifyNoInteractions(characterService);
     }
 
     @Test
-    void getCharacters_returnsEmptyOkResponse_whenNoParamsProvided() throws Exception {
-        mockMvc.perform(get("/v1/census/characters"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+    void getCharacters_returnsBadRequestError_whenWorldIdIsProvidedWithoutNameOrSort() throws Exception {
+        mockMvc.perform(get("/v1/census/characters").param("worldId", "1000"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Either name and worldId or sort must be provided."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
 
         verifyNoInteractions(characterService);
+    }
+
+    @Test
+    void getCharacters_returnsBadRequestError_whenNoParamsProvided() throws Exception {
+        mockMvc.perform(get("/v1/census/characters"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Either name and worldId or sort must be provided."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
+
+        verifyNoInteractions(characterService);
+    }
+
+    @Test
+    void getCharacters_returnsRanking_whenOnlySortIsProvided() throws Exception {
+        when(characterService.getCharacterRanking(null, "combat_rating")).thenReturn(List.of(rankingCharacterResponse()));
+
+        mockMvc.perform(get("/v1/census/characters").param("sort", "combat_rating"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].character_id").value("100"))
+                .andExpect(jsonPath("$[0].world_id").value("1000"))
+                .andExpect(jsonPath("$[0].name").value("Batman"))
+                .andExpect(jsonPath("$[0].combat_rating").value(500))
+                .andExpect(jsonPath("$[0].guild").doesNotExist())
+                .andExpect(jsonPath("$[0].artifacts").doesNotExist());
+
+        verify(characterService, never()).getCharacter(anyString(), anyString());
+    }
+
+    @Test
+    void getCharacters_lowercasesSort_whenSortHasMixedCase() throws Exception {
+        when(characterService.getCharacterRanking(null, "combat_rating")).thenReturn(List.of());
+
+        mockMvc.perform(get("/v1/census/characters").param("sort", "Combat_Rating"))
+                .andExpect(status().isOk());
+
+        verify(characterService).getCharacterRanking(null, "combat_rating");
+    }
+
+    @Test
+    void getCharacters_ignoresNameParam_whenWorldIdIsMissingButSortIsProvided() throws Exception {
+        when(characterService.getCharacterRanking(null, "combat_rating")).thenReturn(List.of());
+
+        mockMvc.perform(get("/v1/census/characters").param("name", "Batman").param("sort", "combat_rating"))
+                .andExpect(status().isOk());
+
+        verify(characterService, never()).getCharacter(anyString(), anyString());
+        verify(characterService).getCharacterRanking(null, "combat_rating");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2", "4", "10", "11", "5001"})
+    void getCharacters_passesWorldIdThrough_whenWorldIdIsAnAllowedRankingWorld(String worldId) throws Exception {
+        when(characterService.getCharacterRanking(worldId, "combat_rating")).thenReturn(List.of());
+
+        mockMvc.perform(get("/v1/census/characters").param("worldId", worldId).param("sort", "combat_rating"))
+                .andExpect(status().isOk());
+
+        verify(characterService).getCharacterRanking(worldId, "combat_rating");
+    }
+
+    @Test
+    void getCharacters_passesNullWorldId_whenWorldIdIsNotAnAllowedRankingWorld() throws Exception {
+        when(characterService.getCharacterRanking(null, "combat_rating")).thenReturn(List.of());
+
+        mockMvc.perform(get("/v1/census/characters").param("worldId", "9999").param("sort", "combat_rating"))
+                .andExpect(status().isOk());
+
+        verify(characterService).getCharacterRanking(null, "combat_rating");
+    }
+
+    @Test
+    void getCharacters_returnsBadRequestError_whenSortCriteriaIsInvalid() throws Exception {
+        when(characterService.getCharacterRanking(null, "bogus")).thenThrow(new InvalidSortCriteriaException());
+
+        mockMvc.perform(get("/v1/census/characters").param("sort", "bogus"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Invalid sort criteria."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
+    }
+
+    @Test
+    void getCharacters_returnsBadGatewayError_whenRankingCensusIsUnreachable() throws Exception {
+        when(characterService.getCharacterRanking(null, "combat_rating")).thenThrow(new CensusException());
+
+        mockMvc.perform(get("/v1/census/characters").param("sort", "combat_rating"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_GATEWAY.value()))
+                .andExpect(jsonPath("$.message").value("The Daybreak Games Census API did not respond."))
+                .andExpect(jsonPath("$.path").value("/v1/census/characters"));
     }
 
     @Test
@@ -195,6 +285,20 @@ class CharacterApiTest {
 
         assertThatThrownBy(() -> mockMvc.perform(get("/v1/census/characters/100/image")))
                 .isInstanceOf(IOException.class);
+    }
+
+    private CharacterResponse rankingCharacterResponse() {
+        CharacterResponse response = new CharacterResponse();
+        response.setCharacterId("100");
+        response.setWorldId("1000");
+        response.setName("Batman");
+        response.setCombatRating(500);
+
+        CharacterStatsResponse stats = new CharacterStatsResponse();
+        stats.setHealth(10000);
+        response.setStats(stats);
+
+        return response;
     }
 
     private CharacterResponse fullCharacterResponse() {

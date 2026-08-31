@@ -87,4 +87,25 @@ public interface CensusClient {
     default CensusCharacterGenderList getCharacterGender(String characterId) {
         return getCharacterGender(characterId, "character_id,gender_id");
     }
+
+    @GetMapping(value = "/get/dcuo/character", produces = MediaType.APPLICATION_JSON_VALUE)
+    CensusCharacterList getCharacterRanking(@RequestParam("world_id") String worldId,
+                                            @RequestParam("c%3Asort") String cSort,
+                                            @RequestParam("level") String level,
+                                            @RequestParam("c%3Alimit") String cLimit,
+                                            @RequestParam("skill_points") String skillPoints,
+                                            @RequestParam("deleted") String deleted,
+                                            @RequestParam("c%3Ashow") String cShow);
+
+    default CensusCharacterList getCharacterRanking(String worldId, String sort) {
+        return getCharacterRanking(
+                worldId == null ? "<5002" : worldId,
+                sort + ":-1,name:1",
+                "30",
+                "100",
+                "]100",
+                "false",
+                "name,gender_id,character_id,skill_points,combat_rating,pvp_combat_rating,world_id,alignment_id,max_health,max_power,defense,dominance,might,precision,restoration,vitalization,power_type_id,movement_mode_id,personality_id,toughness"
+        );
+    }
 }
