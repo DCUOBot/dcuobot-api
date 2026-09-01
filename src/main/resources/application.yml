@@ -23,3 +23,12 @@ feign:
       censusClient:
         connect-timeout: 3000
         read-timeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never

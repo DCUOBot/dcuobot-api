@@ -101,6 +101,18 @@ class RateLimitFilterTest {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS.value());
     }
 
+    @Test
+    void doesNotLimit_actuatorRequests_evenPastCapacity() throws Exception {
+        for (int i = 0; i < CAPACITY + 5; i++) {
+            MockHttpServletRequest request = new MockHttpServletRequest("GET", "/actuator/health");
+            request.setRemoteAddr("203.0.113.7");
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            filter.doFilter(request, response, new MockFilterChain());
+
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        }
+    }
+
     private MockHttpServletResponse sendRequest(String remoteAddr) throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/census/characters");
         request.setRemoteAddr(remoteAddr);
