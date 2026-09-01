@@ -28,6 +28,9 @@ spring:
 census:
   base-url: ${CENSUS_BASE_URL}
 
+scalar:
+  path: /docs
+
 management:
   endpoints:
     web:

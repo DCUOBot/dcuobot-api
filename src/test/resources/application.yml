@@ -16,3 +16,6 @@ spring:
 
 census:
   base-url: https://census-test.dcuo.bot/s:test
+
+scalar:
+  path: /docs
