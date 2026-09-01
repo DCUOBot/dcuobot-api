@@ -39,7 +39,10 @@ jobs:
             ghcr.io/dcuobot/dcuobot-api:latest
 
       - name: Trigger Coolify deployment
+        env:
+          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
         run: |
           curl --fail --request GET \
-            --url "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
-            --header "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
+            --url "$COOLIFY_WEBHOOK_URL" \
+            --header "Authorization: Bearer $COOLIFY_API_TOKEN"
