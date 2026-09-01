@@ -33,28 +33,18 @@ rankings, and server status without hitting Census directly on every request.
 
 ## API
 
-All endpoints are versioned under `/v1`.
+All endpoints are versioned under `/v1`. Full interactive docs — every
+parameter, response schema, and error case — are served by the app itself at
+[`/docs`](https://dcuo.bot/api/docs) (or `http://localhost:8080/docs` when
+running locally), with the raw OpenAPI document at `/v3/api-docs`.
 
-| Method | Path                                    | Description                                            |
-|--------|------------------------------------------|----------------------------------------------------------|
-| GET    | `/v1/census/characters`                  | Look up a character by `name` + `worldId`, or fetch a ranking via `sort` |
-| GET    | `/v1/census/characters/{characterId}/image` | Character paperdoll image (falls back to a gender-based placeholder) |
-| GET    | `/v1/census/guilds`                      | Look up a league by `name` + `worldId`, or fetch a ranking via `sort` + `sortDirection` |
-| GET    | `/v1/census/status/game-servers`         | DCUO game server status                                  |
-| GET    | `/v1/data/alignments`                    | Reference data: alignments                                |
-| GET    | `/v1/data/allies`                        | Reference data: allies                                    |
-| GET    | `/v1/data/artifacts`                     | Reference data: artifacts                                 |
-| GET    | `/v1/data/genders`                       | Reference data: genders                                   |
-| GET    | `/v1/data/guild-alignments`              | Reference data: league alignments                         |
-| GET    | `/v1/data/movement-modes`                | Reference data: movement modes                             |
-| GET    | `/v1/data/personalities`                 | Reference data: personalities                              |
-| GET    | `/v1/data/power-types`                   | Reference data: power types                                |
-| GET    | `/actuator/health`                       | Liveness/health check                                     |
-
-Character sorts: `skill_points`, `combat_rating`, `pvp_combat_rating`,
-`max_health`, `max_power`, `toughness`, `might`, `precision`, `defense`,
-`dominance`, `restoration`, `vitalization`. League sorts: `memberCount`,
-`averageSkillPoints`, `averageCombatRating`, `averagePvpCombatRating`.
+| Group          | Path prefix       | Description                                              |
+|-----------------|--------------------|------------------------------------------------------------|
+| Characters      | `/v1/census/characters` | Character lookup/ranking and paperdoll images        |
+| Guilds          | `/v1/census/guilds`     | League (guild) lookup and ranking                    |
+| Server Status   | `/v1/census/status`     | DCUO game server status                              |
+| Game Data       | `/v1/data`              | Static reference data (alignments, power types, artifacts, allies, etc.) used to resolve the ids returned by the endpoints above |
+| Health          | `/actuator/health`      | Liveness/health check                                |
 
 ## Getting started
 
