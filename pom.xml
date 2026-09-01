@@ -12,18 +12,27 @@
     <version>0.1.1-SNAPSHOT</version>
     <name>dcuobot-api</name>
     <description>dcuobot-api</description>
-    <url/>
+    <url>https://github.com/DCUOBot/dcuobot-api</url>
     <licenses>
-        <license/>
+        <license>
+            <name>MIT License</name>
+            <url>https://github.com/DCUOBot/dcuobot-api/blob/main/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <name>Hype</name>
+            <email>contact@mtilabs.dev</email>
+            <organization>DCUOBot</organization>
+            <organizationUrl>https://github.com/DCUOBot</organizationUrl>
+        </developer>
     </developers>
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection>scm:git:git://github.com/DCUOBot/dcuobot-api.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/DCUOBot/dcuobot-api.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/DCUOBot/dcuobot-api</url>
     </scm>
     <properties>
         <java.version>25</java.version>
