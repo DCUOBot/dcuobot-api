@@ -30,6 +30,7 @@ census:
 
 scalar:
   path: /docs
+  favicon: /favicon.ico
 
 management:
   endpoints:

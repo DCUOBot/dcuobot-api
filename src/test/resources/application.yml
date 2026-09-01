@@ -19,3 +19,4 @@ census:
 
 scalar:
   path: /docs
+  favicon: /favicon.ico
