@@ -11,18 +11,18 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          censusClient:
+            connect-timeout: 3000
+            read-timeout: 12000
 
 census:
   base-url: ${CENSUS_BASE_URL}
-
-feign:
-  circuitbreaker:
-    enabled: true
-  client:
-    config:
-      censusClient:
-        connect-timeout: 3000
-        read-timeout: 5000
 
 management:
   endpoints:
