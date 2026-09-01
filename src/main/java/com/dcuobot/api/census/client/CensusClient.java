@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "censusClient", url = "${census.base-url}")
+@FeignClient(value = "censusClient", url = "${census.base-url}", fallback = CensusClientFallback.class)
 public interface CensusClient {
     @GetMapping(value = "/get/dcuo/character", produces = MediaType.APPLICATION_JSON_VALUE)
     CensusCharacterList getCharacter(@RequestParam("name") String name,
