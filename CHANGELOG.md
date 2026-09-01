@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.0.1...dcuobot-api-v1.1.0) (2026-09-01)
+
+
+### Features
+
+* integrate SpringDoc OpenAPI support and configure API metadata ([#59](https://github.com/DCUOBot/dcuobot-api/issues/59)) ([714220c](https://github.com/DCUOBot/dcuobot-api/commit/714220c66d76cdd29ca89563af7dc8ab376b3d87))
+
 ## [1.0.1](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.0.0...dcuobot-api-v1.0.1) (2026-09-01)
 
 
