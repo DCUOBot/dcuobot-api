@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.1.0...dcuobot-api-v1.2.0) (2026-09-01)
+
+
+### Features
+
+* add UI api docs ([#63](https://github.com/DCUOBot/dcuobot-api/issues/63)) ([1ea48ee](https://github.com/DCUOBot/dcuobot-api/commit/1ea48ee6f73ae99cb449e1373e60900c6c09d62a))
+
 ## [1.1.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.0.1...dcuobot-api-v1.1.0) (2026-09-01)
 
 
