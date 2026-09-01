@@ -16,3 +16,8 @@ spring:
 
 census:
   base-url: https://census-test.dcuo.bot/s:test
+
+scalar:
+  path: /docs
+  favicon: /favicon.ico
+  page-title: DCUOBot API Docs
