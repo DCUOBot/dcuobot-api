@@ -10,9 +10,11 @@ import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
 import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
+import com.dcuobot.api.config.CacheConfig;
 import com.dcuobot.api.gamedata.entity.*;
 import com.dcuobot.api.gamedata.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -58,6 +60,11 @@ public class CharacterService {
      * @throws CharacterNotFoundException if no character matches the given name/world
      * @throws MissingDataException       if reference data required to resolve the character is missing
      */
+    @Cacheable(
+            value = CacheConfig.CHARACTER_LOOKUP_CACHE,
+            key = "T(org.springframework.cache.interceptor.SimpleKeyGenerator)"
+                    + ".generateKey(#name.toLowerCase(), #worldId)"
+    )
     public CharacterResponse getCharacter(String name, String worldId)
             throws InvalidWorldIdException, CensusException, CharacterNotFoundException {
         if (!worldIdHelpers.isValidWorldId(worldId)) {
@@ -152,6 +159,7 @@ public class CharacterService {
      * @throws InvalidSortCriteriaException if {@code sort} is not a supported sort criterion
      * @throws CensusException              if the Census API is unreachable or returns malformed data
      */
+    @Cacheable(CacheConfig.CHARACTER_RANKING_CACHE)
     public Collection<CharacterResponse> getCharacterRanking(String worldId, String sort)
             throws CensusException, InvalidSortCriteriaException {
         if (!sortCriteriaHelpers.isValidCharacterSortCriteria(sort)) {

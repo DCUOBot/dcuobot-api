@@ -12,6 +12,7 @@ import com.dcuobot.api.common.sort.InvalidSortCriteriaException;
 import com.dcuobot.api.common.sort.SortCriteriaHelpers;
 import com.dcuobot.api.common.worldid.InvalidWorldIdException;
 import com.dcuobot.api.common.worldid.WorldIdHelpers;
+import com.dcuobot.api.config.CacheConfig;
 import com.dcuobot.api.gamedata.entity.GuildAlignment;
 import com.dcuobot.api.gamedata.repository.GuildAlignmentRepository;
 import com.dcuobot.api.guild.dto.GuildCharacterResponse;
@@ -20,6 +21,7 @@ import com.dcuobot.api.guild.entity.Guild;
 import com.dcuobot.api.guild.exception.GuildNotFoundException;
 import com.dcuobot.api.guild.repository.GuildRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,6 +62,11 @@ public class GuildService {
      * @throws GuildNotFoundException if no guild matches the given name/world
      * @throws MissingDataException   if the guild's alignment has no matching reference data
      */
+    @Cacheable(
+            value = CacheConfig.GUILD_LOOKUP_CACHE,
+            key = "T(org.springframework.cache.interceptor.SimpleKeyGenerator)"
+                    + ".generateKey(#name.toLowerCase(), #worldId)"
+    )
     @Transactional
     public GuildResponse getGuild(String name, String worldId)
             throws InvalidWorldIdException, CensusException, GuildNotFoundException, MissingDataException {
