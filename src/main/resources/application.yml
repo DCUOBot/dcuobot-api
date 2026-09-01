@@ -6,11 +6,15 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    enabled: true
   cloud:
     openfeign:
       circuitbreaker:
