@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.dcuobot</groupId>
     <artifactId>dcuobot-api</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>dcuobot-api</name>
     <description>dcuobot-api</description>
     <url>https://github.com/DCUOBot/dcuobot-api</url>

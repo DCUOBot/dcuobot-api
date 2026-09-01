@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.0.0...dcuobot-api-v1.0.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* correct Dockerfile build (previous commit was mistyped as refactor) ([5047403](https://github.com/DCUOBot/dcuobot-api/commit/5047403821c22190ed07db84d6b3140d224ad557))
+
 ## [1.0.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v0.1.0...dcuobot-api-v1.0.0) (2026-09-01)
 
 
