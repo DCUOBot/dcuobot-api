@@ -4,9 +4,11 @@ import com.dcuobot.api.census.client.CensusClient;
 import com.dcuobot.api.census.dto.status.CensusGameServerStatus;
 import com.dcuobot.api.census.dto.status.CensusGameServerStatusList;
 import com.dcuobot.api.census.exception.CensusException;
+import com.dcuobot.api.config.CacheConfig;
 import com.dcuobot.api.status.dto.GameServerStatus;
 import com.dcuobot.api.status.dto.GameServerStatusResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class GameServerStatusService {
      *
      * @throws CensusException if the Census API is unreachable or returns malformed data
      */
+    @Cacheable(CacheConfig.SERVER_STATUS_CACHE)
     public List<GameServerStatusResponse> getGameServerStatus() throws CensusException {
         CensusGameServerStatusList statusList = censusClient.getGameServerStatus();
 
