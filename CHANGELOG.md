@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.2.0...dcuobot-api-v1.3.0) (2026-09-19)
+
+
+### Features
+
+* increase time limiter and client timeout thresholds ([#75](https://github.com/DCUOBot/dcuobot-api/issues/75)) ([c138509](https://github.com/DCUOBot/dcuobot-api/commit/c138509062199e0cb490b96b224b1836baf1822a))
+
 ## [1.2.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.1.0...dcuobot-api-v1.2.0) (2026-09-01)
 
 
