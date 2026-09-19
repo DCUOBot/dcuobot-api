@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.3.0...dcuobot-api-v1.4.0) (2026-09-19)
+
+
+### Features
+
+* configure forward headers strategy in application.yml ([#78](https://github.com/DCUOBot/dcuobot-api/issues/78)) ([fb21fc3](https://github.com/DCUOBot/dcuobot-api/commit/fb21fc3fc86512b43e0e1d5b0c4489cd24cf9272))
+
 ## [1.3.0](https://github.com/DCUOBot/dcuobot-api/compare/dcuobot-api-v1.2.0...dcuobot-api-v1.3.0) (2026-09-19)
 
 
