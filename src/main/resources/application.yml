@@ -33,6 +33,9 @@ scalar:
   favicon: /favicon.ico
   page-title: DCUOBot API Docs
 
+server:
+  forward-headers-strategy: framework
+
 management:
   endpoints:
     web:
