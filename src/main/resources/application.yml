@@ -22,8 +22,8 @@ spring:
       client:
         config:
           censusClient:
-            connect-timeout: 3000
-            read-timeout: 12000
+            connect-timeout: 6000
+            read-timeout: 24000
 
 census:
   base-url: ${CENSUS_BASE_URL}

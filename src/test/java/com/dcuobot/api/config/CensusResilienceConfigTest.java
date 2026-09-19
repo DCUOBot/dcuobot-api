@@ -26,9 +26,9 @@ class CensusResilienceConfigTest {
     }
 
     @Test
-    void timeLimiter_boundsCallsToSixSeconds_asABackstopAboveFeignsOwnReadTimeout() {
+    void timeLimiter_boundsCallsToThirtySeconds_asABackstopAboveFeignsOwnReadTimeout() {
         TimeLimiterConfig config = CensusResilienceConfig.timeLimiterConfig();
 
-        assertThat(config.getTimeoutDuration()).isEqualTo(Duration.ofSeconds(6));
+        assertThat(config.getTimeoutDuration()).isEqualTo(Duration.ofSeconds(30));
     }
 }
