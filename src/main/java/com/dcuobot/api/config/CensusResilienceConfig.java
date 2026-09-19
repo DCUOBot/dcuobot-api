@@ -47,7 +47,7 @@ public class CensusResilienceConfig {
         // A safety net above Feign's own read timeout, in case a call hangs somewhere Feign's
         // timeout doesn't cover.
         return TimeLimiterConfig.custom()
-                .timeoutDuration(Duration.ofSeconds(6))
+                .timeoutDuration(Duration.ofSeconds(30))
                 .build();
     }
 }
